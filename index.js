@@ -1,26 +1,19 @@
 const express = require("express");
 const next = require("next");
+const cors = require("cors");
 const Twitter = require("twitter-node-client").Twitter;
-const {
-  parsed: {
-    TWITTER_CONSUMER_KEY,
-    TWITTER_CONSUMER_SECRET,
-    TWITTER_ACCESS_TOKEN,
-    TWITTER_ACCESS_TOKEN_SECRET,
-    TWITTER_CALLBACK_URL
-  }
-} = require("dotenv").config();
+require("dotenv").config();
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const twitterConfig = {
-  consumerKey: TWITTER_CONSUMER_KEY,
-  consumerSecret: TWITTER_CONSUMER_SECRET,
-  accessToken: TWITTER_ACCESS_TOKEN,
-  accessTokenSecret: TWITTER_ACCESS_TOKEN_SECRET,
-  callBackUrl: TWITTER_CALLBACK_URL
+  consumerKey: process.env.TWITTER_CONSUMER_KEY,
+  consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+  accessToken: process.env.TWITTER_ACCESS_TOKEN,
+  accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+  callBackUrl: process.env.TWITTER_CALLBACK_URL
 };
 
 const twitter = new Twitter(twitterConfig);
@@ -29,6 +22,8 @@ app
   .prepare()
   .then(() => {
     const server = express();
+
+    server.use(cors());
 
     server.get("/twitter/profile", (req, res) => {
       twitter.getCustomApiCall(
@@ -74,7 +69,7 @@ app
       return handle(req, res);
     });
 
-    server.listen(3000, err => {
+    server.listen(process.env.PORT || 3000, err => {
       if (err) throw err;
       console.log("> Ready on http://localhost:3000");
     });

@@ -21,7 +21,10 @@ import LoadingCard from "../components/loading-card";
 
 import styles from "./styles";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://twitter-profile-xbihiaolzy.now.sh";
 
 class TwitterFeed extends Component {
   state = {
