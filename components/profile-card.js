@@ -31,6 +31,14 @@ const styles = StyleSheet.create({
 });
 
 export default ({ profile }) => {
+  if (!profile) {
+    return (
+      <Card style={{ marginBottom: 10, padding: 10 }}>
+        <Text>No profile found</Text>
+      </Card>
+    );
+  }
+
   const {
     name,
     profile_image_url,

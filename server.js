@@ -11,8 +11,6 @@ const {
   }
 } = require("dotenv").config();
 
-console.log(TWITTER_CONSUMER_KEY);
-
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -37,6 +35,7 @@ app
         "/users/show.json",
         { screen_name: req.query.screen_name },
         err => {
+          res.status(400).json();
           console.log("ERROR [%s]", err);
         },
         data => {
@@ -62,6 +61,7 @@ app
       twitter.getUserTimeline(
         params,
         err => {
+          res.status(400).json([]);
           console.log("ERROR [%s]", err);
         },
         data => {
