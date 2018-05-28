@@ -1,5 +1,5 @@
 {
-  "name": "portfolio",
+  "name": "twitter-profile",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -20,7 +20,6 @@
     "react": "^16.4.0",
     "react-art": "^16.4.0",
     "react-dom": "^16.4.0",
-    "react-native-autocomplete-input": "^3.5.0",
     "react-native-web": "^0.7.3",
     "twitter-node-client": "0.0.6"
   },
