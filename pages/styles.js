@@ -20,7 +20,6 @@ export default StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#E6ECF0",
     outline: "none",
-    color: "#1EA1F2",
     borderColor: "#E6ECF0",
     borderWidth: 1
   }

@@ -12,8 +12,7 @@ const twitterConfig = {
   consumerKey: process.env.TWITTER_CONSUMER_KEY,
   consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
   accessToken: process.env.TWITTER_ACCESS_TOKEN,
-  accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-  callBackUrl: process.env.TWITTER_CALLBACK_URL
+  accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 };
 
 const twitter = new Twitter(twitterConfig);
