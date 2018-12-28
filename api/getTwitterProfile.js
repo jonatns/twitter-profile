@@ -9,16 +9,17 @@ const twitterConfig = {
 
 const twitter = new Twitter(twitterConfig);
 
-module.exports = (req, res) => {
-  twitter.getCustomApiCall(
-    "/users/show.json",
-    { screen_name: req.query.screen_name },
-    err => {
-      res.status(400).json();
-      console.log("ERROR [%s]", err);
-    },
-    data => {
-      res.status(200).json(JSON.parse(data));
-    }
-  );
+module.exports = req => {
+  return new Promise((resolve, reject) => {
+    twitter.getCustomApiCall(
+      "/users/show.json",
+      { screen_name: req.query.screen_name },
+      err => {
+        reject(err);
+      },
+      data => {
+        resolve(JSON.parse(data));
+      }
+    );
+  });
 };
