@@ -24,15 +24,13 @@ module.exports = (req, res) => {
     params.max_id = max_id;
   }
 
-  return new Promise((resolve, reject) => {
-    twitter.getUserTimeline(
-      params,
-      err => {
-        reject(err);
-      },
-      data => {
-        resolve(JSON.parse(data));
-      }
-    );
-  });
+  twitter.getUserTimeline(
+    params,
+    err => {
+      res.status(400).send(err);
+    },
+    data => {
+      res.status(200).send(JSON.parse(data));
+    }
+  );
 };
