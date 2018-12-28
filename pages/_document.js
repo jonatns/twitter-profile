@@ -1,9 +1,7 @@
+import React from "react";
 import Document, { Head, Main, NextScript } from "next/document";
 import flush from "styled-jsx/server";
-import React from "react";
 import { AppRegistry } from "react-native";
-
-let index = 0;
 
 // Force Next-generated DOM elements to fill their parent's height.
 // Not required for using of react-native-web, but helps normalize
@@ -19,13 +17,14 @@ export default class MyDocument extends Document {
   static async getInitialProps({ renderPage }) {
     AppRegistry.registerComponent("Main", () => Main);
     const { getStyleElement } = AppRegistry.getApplication("Main");
+
     const page = renderPage();
     const styles = [
       <style
-        key={index++}
+        key="_next-styles"
         dangerouslySetInnerHTML={{ __html: normalizeNextElements }}
       />,
-      getStyleElement()
+      getStyleElement({ key: "_react-native-web-styles" })
     ];
     return { ...page, styles };
   }
@@ -36,7 +35,6 @@ export default class MyDocument extends Document {
     return (
       <html style={{ height: "100%", width: "100%" }}>
         <Head>
-          <title>react-native-web</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0"

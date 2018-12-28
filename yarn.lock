@@ -4049,7 +4049,7 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-art@^16.4.0:
+react-art@^16.7.0:
   version "16.7.0"
   resolved "https://registry.yarnpkg.com/react-art/-/react-art-16.7.0.tgz#e06943f4e939c1ebf14632ff45adb8e1a8b77ff5"
   integrity sha512-T6iyUFmqJegwgE1Kg4JQa7S/qf79RFxEXvbHeukiC1QgaETwKY7L2HO4D5gT9khowJmiNh0xN2b61ak7N4D6yQ==
@@ -4076,10 +4076,10 @@ react-error-overlay@4.0.0:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
   integrity sha512-FlsPxavEyMuR6TjVbSSywovXSEyOg6ZDj5+Z8nbsRl9EkOzAhEIcS+GLoQDC5fz/t9suhUXWmUrOBrgeUvrMxw==
 
-react-native-web@^0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.7.3.tgz#a970b8a618d14d4e4a9e42c8e9a591e5d7cf1bae"
-  integrity sha512-vuZxiAx8A34Qz9Qk3iIaHQ9oOVMI4elULr8mkdEAH2O9wCuelb0jbcgBF7cOYcgM279VXmyr43SFhBezy3viEA==
+react-native-web@^0.9.10:
+  version "0.9.10"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.9.10.tgz#016dc10587a7eb9516e3ffe2ad80dee2a8af7981"
+  integrity sha512-JLnvtEvjHJ3ENOSZcLm6oAAUyH3rmMPzmqNFxl7pXDzJ1ALSrrdQcKKAleeSYG/rsFKp2u03lf/7YYb5tg5SXA==
   dependencies:
     array-find-index "^1.0.2"
     create-react-class "^15.6.2"

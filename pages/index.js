@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Head from "next/head";
 import {
   StyleSheet,
   Text,
@@ -144,6 +145,9 @@ class TwitterFeed extends Component {
         onClick={this.handleDocumentClick}
         style={{ height: "100%", width: "100%" }}
       >
+        <Head>
+          <title>react-native-web</title>
+        </Head>
         <View
           style={styles.container}
           onTouchStart={this.handleInputFocusAndBlur}
@@ -158,7 +162,9 @@ class TwitterFeed extends Component {
                 style={[
                   styles.searchInput,
                   this.state.inputFocused && {
-                    borderColor: "#1EA1F2"
+                    color: "#1EA1F2",
+                    borderColor: "#1EA1F2",
+                    backgroundColor: "#fff"
                   }
                 ]}
                 onKeyPress={this.handleKeyPress}
@@ -199,6 +205,11 @@ class TwitterFeed extends Component {
               opacity: 0.6;
             }
             :global(.header) {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              z-index: 3000;
               display: flex;
               justify-content: center;
               background-color: #fff;
@@ -212,6 +223,7 @@ class TwitterFeed extends Component {
             }
             :global(.card-container) {
               align-self: center;
+              margin-top: 50px;
               width: 600px;
             }
             :global(.profile-card) {
