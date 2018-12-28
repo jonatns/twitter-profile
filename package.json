@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@now/next": "^0.0.82",
+    "@now/node": "^0.4.27",
     "babel-plugin-module-resolver": "^3.1.1"
   }
 }
