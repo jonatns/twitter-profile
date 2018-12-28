@@ -3,8 +3,14 @@
   "builds": [
     { "src": "next.config.js", "use": "@now/next" },
     {
-      "src": "api/index.js",
+      "src": "api/*.js",
       "use": "@now/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ],
   "env": {
