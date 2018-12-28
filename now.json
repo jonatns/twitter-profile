@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "builds": [{ "src": "index.js", "use": "@now/next" }],
+  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
   "env": {
     "TWITTER_CONSUMER_KEY": "@twitter-consumer-key",
     "TWITTER_CONSUMER_SECRET": "@twitter-consumer-secret",
