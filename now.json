@@ -1,10 +1,16 @@
 {
   "version": 2,
-  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
-  "env": {
-    "TWITTER_CONSUMER_KEY": "@twitter-consumer-key",
-    "TWITTER_CONSUMER_SECRET": "@twitter-consumer-secret",
-    "TWITTER_ACCESS_TOKEN": "@twitter-access-token",
-    "TWITTER_ACCESS_TOKEN_SECRET": "@twitter-access-token-secret"
-  }
+  "builds": [
+    { "src": "next.config.js", "use": "@now/next" },
+    {
+      "src": "server.js",
+      "use": "@now/node",
+      "env": {
+        "TWITTER_CONSUMER_KEY": "@twitter-consumer-key",
+        "TWITTER_CONSUMER_SECRET": "@twitter-consumer-secret",
+        "TWITTER_ACCESS_TOKEN": "@twitter-access-token",
+        "TWITTER_ACCESS_TOKEN_SECRET": "@twitter-access-token-secret"
+      }
+    }
+  ]
 }
