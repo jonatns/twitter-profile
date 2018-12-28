@@ -21,11 +21,6 @@ import LoadingCard from "../components/loading-card";
 
 import styles from "./styles";
 
-const BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://twitter-profile-xbihiaolzy.now.sh";
-
 class TwitterFeed extends Component {
   state = {
     tweets: [],
@@ -50,7 +45,7 @@ class TwitterFeed extends Component {
 
     this.setState(newState, async () => {
       const res = await fetch(
-        `${BASE_URL}/twitter/timeline?max_id=${this.smallestId}&&screen_name=${
+        `/twitter/timeline?max_id=${this.smallestId}&&screen_name=${
           this.state.screenName
         }`
       );
@@ -73,7 +68,7 @@ class TwitterFeed extends Component {
     this.setState({ loadingProfile: true }, async () => {
       try {
         const res = await fetch(
-          `${BASE_URL}/twitter/profile?screen_name=${this.state.screenName}`
+          `/twitter/profile?screen_name=${this.state.screenName}`
         );
 
         const profile = await res.json();
