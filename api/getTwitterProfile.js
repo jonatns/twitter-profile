@@ -1,3 +1,4 @@
+require("now-env");
 const Twitter = require("twitter-node-client").Twitter;
 
 const twitterConfig = {
