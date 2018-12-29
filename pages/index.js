@@ -31,57 +31,54 @@ class TwitterFeed extends Component {
     screenName: 'jonat_ns',
     profile: null,
     inputFocused: false,
-    searchResults: ['test1', 'test2']
+    searchResults: ['test1', 'test2'],
+    smallestI: null
   };
 
-  smallestId = null;
-
   fetchTweets = () => {
-    const newState = { loadingTweets: true };
-    if (this.state.lastSearch !== this.state.screenName) {
-      newState.lastSearch = this.state.screenName;
-      newState.tweets = [];
-      this.smallestId = null;
+    const { lastSearch, screenName } = this.state;
+    const preFetchState = { loadingTweets: true };
+
+    if (lastSearch !== screenName) {
+      preFetchState.lastSearch = screenName;
+      preFetchState.tweets = [];
+      preFetchState.smallestId = null;
     }
 
-    this.setState(newState, async () => {
-      try {
-        const resp = await fetch(
-          `/api/get-twitter-timeline.js?max_id=${this.smallestId}&&screen_name=${this.state.screenName}`
-        );
-        const data = await resp.json();
+    this.setState(preFetchState, async () => {
+      const { smallestId, screenName, tweets } = this.state;
 
-        if (data.statusCode === 404) {
-          throw new Error();
-        }
+      const resp = await fetch(`/api/get-twitter-timeline.js?max_id=${smallestId}&&screen_name=${screenName}`);
+      const { status, data } = await resp.json();
 
-        let newTweets = this.state.tweets.concat(data);
+      if (status === 'success') {
+        const updatedState = { loadingTweets: false };
 
-        if (tweets && tweets.length > 0) {
-          this.smallestId = bigInt(tweets[tweets.length - 1].id_str)
+        if (data && data.length > 0) {
+          updatedState.smallestId = bigInt(data[data.length - 1].id_str)
             .minus(1)
             .toString();
+
+          updatedState.tweets = [...tweets, ...data];
         }
 
-        this.setState({ tweets: newTweets, loadingTweets: false });
-      } catch (err) {
-        this.setState({ tweets: [], loadingTweets: false });
+        this.setState(updatedState);
+      } else {
+        this.setState({ smallestId: null, tweets: [], loadingTweets: false });
       }
     });
   };
 
   fetchProfile = () => {
     this.setState({ loadingProfile: true }, async () => {
-      try {
-        const resp = await fetch(`/api/get-twitter-profile.js?screen_name=${this.state.screenName}`);
-        const data = await resp.json();
+      const { screenName } = this.state;
 
-        if (data.statusCode === 404) {
-          throw new Error();
-        }
+      const resp = await fetch(`/api/get-twitter-profile.js?screen_name=${screenName}`);
+      const { data, status } = await resp.json();
 
+      if (status === 'success') {
         this.setState({ data, loadingProfile: false });
-      } catch (e) {
+      } else {
         this.setState({ profile: null, loadingProfile: false });
       }
     });
@@ -115,7 +112,8 @@ class TwitterFeed extends Component {
 
   handleKeyPress = e => {
     if (e.key === 'Enter') {
-      if (this.state.lastSearch !== this.state.screenName) {
+      const { lastSearch, screenName } = this.state;
+      if (lastSearch !== screenName) {
         this.fetchProfile();
         this.fetchTweets();
       }
@@ -137,7 +135,8 @@ class TwitterFeed extends Component {
   };
 
   handleScrollEvent = ({ nativeEvent }) => {
-    if (this.isCloseToBottom(nativeEvent) && !this.state.loadingTweets) {
+    const { loadingTweets } = this.state;
+    if (this.isCloseToBottom(nativeEvent) && !loadingTweets) {
       this.fetchTweets();
     }
   };
