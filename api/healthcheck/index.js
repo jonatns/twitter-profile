@@ -11,5 +11,14 @@ module.exports = (req, res) => {
 
   const twitter = new Twitter(twitterConfig);
 
-  res.end("Success!");
+  twitter.getCustomApiCall(
+    "/users/show.json",
+    { screen_name: "jonat_ns" },
+    err => {
+      res.send(err);
+    },
+    data => {
+      res.send(JSON.parse(data));
+    }
+  );
 };
