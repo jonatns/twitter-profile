@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
       twitter.getUserTimeline(
         params,
         err => {
-          reject(err);
+          reject(JSON.stringify(err));
         },
         data => {
           resolve(data);
@@ -33,8 +33,8 @@ module.exports = async (req, res) => {
       );
     });
 
-    res.end(JSON.stringify(data));
+    res.end(data);
   } catch (err) {
-    res.end(JSON.stringify(err));
+    res.end(err);
   }
 };
