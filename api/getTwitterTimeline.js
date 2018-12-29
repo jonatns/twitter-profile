@@ -27,10 +27,10 @@ module.exports = (req, res) => {
   twitter.getUserTimeline(
     params,
     err => {
-      res.status(400).send(err);
+      res.status(400).end(err);
     },
     data => {
-      res.status(200).send(JSON.parse(data));
+      res.status(200).end(JSON.parse(data));
     }
   );
 };

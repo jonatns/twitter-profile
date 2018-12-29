@@ -15,10 +15,10 @@ module.exports = (req, res) => {
     "/users/show.json",
     { screen_name: req.query.screen_name },
     err => {
-      res.status(400).send(err);
+      res.status(400).end(err);
     },
     data => {
-      res.status(200).send(JSON.parse(data));
+      res.status(200).end(JSON.parse(data));
     }
   );
 };
