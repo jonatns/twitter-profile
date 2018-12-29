@@ -52,7 +52,7 @@ class TwitterFeed extends Component {
 
         const tweets = await res.json();
 
-        let newTweets = this.state.tweets.concat(tweets);
+        let newTweets = this.state.tweets.concat(JSON.parse(tweets));
 
         if (tweets && tweets.length > 0) {
           this.smallestId = bigInt(tweets[tweets.length - 1].id_str)
@@ -74,7 +74,7 @@ class TwitterFeed extends Component {
 
         const profile = await res.json();
 
-        this.setState({ profile, loadingProfile: false });
+        this.setState({ JSON.parse(profile), loadingProfile: false });
       } catch (e) {
         this.setState({ profile: null, loadingProfile: false });
       }
