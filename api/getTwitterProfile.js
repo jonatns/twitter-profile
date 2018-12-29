@@ -11,6 +11,8 @@ module.exports = (req, res) => {
 
   const twitter = new Twitter(twitterConfig);
 
+  res.status(200).send("hey");
+
   twitter.getCustomApiCall(
     "/users/show.json",
     { screen_name: req.query.screen_name },

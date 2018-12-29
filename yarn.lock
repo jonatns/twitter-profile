@@ -4927,7 +4927,7 @@ tty-browserify@0.0.0:
   resolved "https://registry.yarnpkg.com/tty-browserify/-/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"
   integrity sha1-oVe6QC2iTpv5V/mqadUk7tQpAaY=
 
-twitter-node-client@0.0.6:
+twitter-node-client@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/twitter-node-client/-/twitter-node-client-0.0.6.tgz#99ac607adf73d85b91e94ee2e71bdb6858b01377"
   integrity sha1-maxget9z2FuR6U7i5xvbaFiwE3c=
