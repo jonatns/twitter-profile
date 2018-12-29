@@ -146,7 +146,7 @@ class TwitterFeed extends Component {
         style={{ height: "100%", width: "100%" }}
       >
         <Head>
-          <title>react-native-web</title>
+          <title>Twitter Profile Search</title>
         </Head>
         <View
           style={styles.container}

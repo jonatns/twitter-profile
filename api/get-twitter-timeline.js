@@ -2,7 +2,7 @@ require("now-env");
 const { parse } = require("url");
 const Twitter = require("twitter-node-client").Twitter;
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   const { query } = parse(req.url, true);
   const { max_id, screen_name } = query;
   const params = { screen_name };
@@ -25,15 +25,21 @@ module.exports = (req, res) => {
 
   const twitter = new Twitter(twitterConfig);
 
-  return new Promise((resolve, reject) => {
-    twitter.getUserTimeline(
-      params,
-      err => {
-        reject(err);
-      },
-      data => {
-        resolve(JSON.parse(data));
-      }
-    );
-  });
+  try {
+    const data = await new Promise((resolve, reject) => {
+      twitter.getUserTimeline(
+        params,
+        err => {
+          reject(JSON.stringify(err));
+        },
+        data => {
+          resolve(data);
+        }
+      );
+    });
+
+    res.end(data);
+  } catch (err) {
+    res.end(err);
+  }
 };
