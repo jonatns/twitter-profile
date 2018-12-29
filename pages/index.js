@@ -35,6 +35,21 @@ class TwitterFeed extends Component {
     smallestI: null
   };
 
+  fetchProfile = () => {
+    this.setState({ loadingProfile: true }, async () => {
+      const { screenName } = this.state;
+
+      const resp = await fetch(`/api/get-twitter-profile.js?screen_name=${screenName}`);
+      const { status, data } = await resp.json();
+
+      if (status === 'success') {
+        this.setState({ profile: JSON.parse(data), loadingProfile: false });
+      } else {
+        this.setState({ profile: null, loadingProfile: false });
+      }
+    });
+  };
+
   fetchTweets = () => {
     const { lastSearch, screenName } = this.state;
     const preFetchState = { loadingTweets: true };
@@ -48,38 +63,24 @@ class TwitterFeed extends Component {
     this.setState(preFetchState, async () => {
       const { smallestId, screenName, tweets } = this.state;
 
-      const resp = await fetch(`/api/get-twitter-timeline.js?max_id=${smallestId}&&screen_name=${screenName}`);
+      const resp = await fetch(`/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`);
       const { status, data } = await resp.json();
 
       if (status === 'success') {
+        const jsonData = JSON.parse(data);
         const updatedState = { loadingTweets: false };
 
-        if (data && data.length > 0) {
-          updatedState.smallestId = bigInt(data[data.length - 1].id_str)
+        if (jsonData && jsonData.length > 0) {
+          updatedState.smallestId = bigInt(jsonData[jsonData.length - 1].id_str)
             .minus(1)
             .toString();
 
-          updatedState.tweets = [...tweets, ...data];
+          updatedState.tweets = [...tweets, ...jsonData];
         }
 
         this.setState(updatedState);
       } else {
         this.setState({ smallestId: null, tweets: [], loadingTweets: false });
-      }
-    });
-  };
-
-  fetchProfile = () => {
-    this.setState({ loadingProfile: true }, async () => {
-      const { screenName } = this.state;
-
-      const resp = await fetch(`/api/get-twitter-profile.js?screen_name=${screenName}`);
-      const { data, status } = await resp.json();
-
-      if (status === 'success') {
-        this.setState({ data, loadingProfile: false });
-      } else {
-        this.setState({ profile: null, loadingProfile: false });
       }
     });
   };
@@ -174,7 +175,7 @@ class TwitterFeed extends Component {
             scrollEventThrottle={400}
           >
             <div className="card-container">
-              {!loadingProfile && profile && (
+              {!loadingProfile && (
                 <div className="profile-card">
                   <ProfileCard profile={profile} />
                 </div>
