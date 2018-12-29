@@ -2,6 +2,8 @@ require("now-env");
 const Twitter = require("twitter-node-client").Twitter;
 
 module.exports = (req, res) => {
+  res.status(200).send("test: " + process.env.TWITTER_CONSUMER_KEY);
+
   const twitterConfig = {
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
@@ -10,8 +12,6 @@ module.exports = (req, res) => {
   };
 
   const twitter = new Twitter(twitterConfig);
-
-  res.status(200).send("hey");
 
   twitter.getCustomApiCall(
     "/users/show.json",
