@@ -46,13 +46,16 @@ class TwitterFeed extends Component {
 
     this.setState(newState, async () => {
       try {
-        const res = await fetch(
+        const resp = await fetch(
           `/api/get-twitter-timeline.js?max_id=${this.smallestId}&&screen_name=${this.state.screenName}`
         );
+        const data = await resp.json();
 
-        const tweets = await res.json();
+        if (data.statusCode === 404) {
+          throw new Error();
+        }
 
-        let newTweets = this.state.tweets.concat(tweets);
+        let newTweets = this.state.tweets.concat(data);
 
         if (tweets && tweets.length > 0) {
           this.smallestId = bigInt(tweets[tweets.length - 1].id_str)
@@ -70,11 +73,14 @@ class TwitterFeed extends Component {
   fetchProfile = () => {
     this.setState({ loadingProfile: true }, async () => {
       try {
-        const res = await fetch(`/api/get-twitter-profile.js?screen_name=${this.state.screenName}`);
+        const resp = await fetch(`/api/get-twitter-profile.js?screen_name=${this.state.screenName}`);
+        const data = await resp.json();
 
-        const profile = await res.json();
+        if (data.statusCode === 404) {
+          throw new Error();
+        }
 
-        this.setState({ profile, loadingProfile: false });
+        this.setState({ data, loadingProfile: false });
       } catch (e) {
         this.setState({ profile: null, loadingProfile: false });
       }
