@@ -46,7 +46,7 @@ class TwitterFeed extends Component {
 
     this.setState(newState, async () => {
       const res = await fetch(
-        `/api/get-twitter-timeline?max_id=${this.smallestId}&&screen_name=${
+        `/api/get-twitter-timeline.js?max_id=${this.smallestId}&&screen_name=${
           this.state.screenName
         }`
       );
@@ -69,7 +69,7 @@ class TwitterFeed extends Component {
     this.setState({ loadingProfile: true }, async () => {
       try {
         const res = await fetch(
-          `/api/get-twitter-profile?screen_name=${this.state.screenName}`
+          `/api/get-twitter-profile.js?screen_name=${this.state.screenName}`
         );
 
         const profile = await res.json();

@@ -1,9 +1,8 @@
 require("now-env");
+const { parse } = require("url");
 const Twitter = require("twitter-node-client").Twitter;
 
 module.exports = (req, res) => {
-  res.end("test: " + process.env.TWITTER_CONSUMER_KEY);
-
   const twitterConfig = {
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
@@ -12,15 +11,18 @@ module.exports = (req, res) => {
   };
 
   const twitter = new Twitter(twitterConfig);
+  const { query } = parse(req.url, true);
 
-  twitter.getCustomApiCall(
-    "/users/show.json",
-    { screen_name: req.query.screen_name },
-    err => {
-      res.send(err);
-    },
-    data => {
-      res.send(JSON.parse(data));
-    }
-  );
+  return new Promise((resolve, reject) => {
+    twitter.getCustomApiCall(
+      "/users/show.json",
+      { screen_name: query.screen_name },
+      err => {
+        reject(err);
+      },
+      data => {
+        resolve(JSON.parse(data));
+      }
+    );
+  });
 };
