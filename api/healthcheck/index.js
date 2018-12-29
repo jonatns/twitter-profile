@@ -11,14 +11,12 @@ module.exports = (req, res) => {
 
   const twitter = new Twitter(twitterConfig);
 
-  twitter.getCustomApiCall(
-    "/users/show.json",
-    { screen_name: "jonat_ns" },
-    err => {
-      res.send(err);
-    },
-    data => {
-      res.send(JSON.parse(data));
-    }
-  );
+  return new Promise((resolve, reject) => {
+    twitter.getCustomApiCall(
+      "/users/show.json",
+      { screen_name: "jonat_ns" },
+      err => resolve(err),
+      data => resolve(JSON.parse(data))
+    );
+  });
 };
