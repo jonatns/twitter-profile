@@ -1,11 +1,11 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    borderBottomColor: "rgb(230, 236, 240)",
+    borderBottomColor: 'rgb(230, 236, 240)',
     borderBottomWidth: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 10,
     flex: 1,
     minHeight: 200

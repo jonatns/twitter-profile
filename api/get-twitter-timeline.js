@@ -1,18 +1,13 @@
-require("now-env");
-const { parse } = require("url");
-const Twitter = require("twitter-node-client").Twitter;
+require('now-env');
+const { parse } = require('url');
+const Twitter = require('twitter-node-client').Twitter;
 
 module.exports = async (req, res) => {
   const { query } = parse(req.url, true);
   const { max_id, screen_name } = query;
   const params = { screen_name };
 
-  if (
-    max_id &&
-    typeof max_id !== "undefined" &&
-    max_id !== "null" &&
-    isFinite(max_id)
-  ) {
+  if (max_id && typeof max_id !== 'undefined' && max_id !== 'null' && isFinite(max_id)) {
     params.max_id = max_id;
   }
 
@@ -30,7 +25,7 @@ module.exports = async (req, res) => {
       twitter.getUserTimeline(
         params,
         err => {
-          reject(JSON.stringify(err));
+          reject(err);
         },
         data => {
           resolve(data);
@@ -38,8 +33,8 @@ module.exports = async (req, res) => {
       );
     });
 
-    res.end(data);
+    res.end(JSON.stringify(data));
   } catch (err) {
-    res.end(err);
+    res.end(JSON.stringify(err));
   }
 };

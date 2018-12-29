@@ -1,6 +1,6 @@
-require("now-env");
-const { parse } = require("url");
-const Twitter = require("twitter-node-client").Twitter;
+require('now-env');
+const { parse } = require('url');
+const Twitter = require('twitter-node-client').Twitter;
 
 module.exports = async (req, res) => {
   const twitterConfig = {
@@ -16,10 +16,10 @@ module.exports = async (req, res) => {
   try {
     const data = await new Promise((resolve, reject) => {
       twitter.getCustomApiCall(
-        "/users/show.json",
+        '/users/show.json',
         { screen_name: query.screen_name },
         err => {
-          reject(JSON.stringify(err));
+          reject(err);
         },
         data => {
           resolve(data);
@@ -27,8 +27,8 @@ module.exports = async (req, res) => {
       );
     });
 
-    res.end(data);
+    res.end(JSON.stringify(data));
   } catch (err) {
-    res.end(err);
+    res.end(JSON.stringify(err));
   }
 };

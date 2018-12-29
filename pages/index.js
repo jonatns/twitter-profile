@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import Head from "next/head";
+import React, { Component } from 'react';
+import Head from 'next/head';
 import {
   StyleSheet,
   Text,
@@ -12,26 +12,26 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   TextInput
-} from "react-native";
-import fetch from "isomorphic-unfetch";
-import bigInt from "big-integer";
+} from 'react-native';
+import fetch from 'isomorphic-unfetch';
+import bigInt from 'big-integer';
 
-import Card from "../components/card";
-import ProfileCard from "../components/profile-card";
-import LoadingCard from "../components/loading-card";
+import Card from '../components/card';
+import ProfileCard from '../components/profile-card';
+import LoadingCard from '../components/loading-card';
 
-import styles from "./styles";
+import styles from './styles';
 
 class TwitterFeed extends Component {
   state = {
     tweets: [],
     loadingTweets: false,
     loadingProfile: false,
-    lastSearch: "jonat_ns",
-    screenName: "jonat_ns",
+    lastSearch: 'jonat_ns',
+    screenName: 'jonat_ns',
     profile: null,
     inputFocused: false,
-    searchResults: ["test1", "test2"]
+    searchResults: ['test1', 'test2']
   };
 
   smallestId = null;
@@ -45,32 +45,32 @@ class TwitterFeed extends Component {
     }
 
     this.setState(newState, async () => {
-      const res = await fetch(
-        `/api/get-twitter-timeline.js?max_id=${this.smallestId}&&screen_name=${
-          this.state.screenName
-        }`
-      );
+      try {
+        const res = await fetch(
+          `/api/get-twitter-timeline.js?max_id=${this.smallestId}&&screen_name=${this.state.screenName}`
+        );
 
-      const tweets = await res.json();
+        const tweets = await res.json();
 
-      let newTweets = this.state.tweets.concat(tweets);
+        let newTweets = this.state.tweets.concat(tweets);
 
-      if (tweets && tweets.length > 0) {
-        this.smallestId = bigInt(tweets[tweets.length - 1].id_str)
-          .minus(1)
-          .toString();
+        if (tweets && tweets.length > 0) {
+          this.smallestId = bigInt(tweets[tweets.length - 1].id_str)
+            .minus(1)
+            .toString();
+        }
+
+        this.setState({ tweets: newTweets, loadingTweets: false });
+      } catch (err) {
+        this.setState({ tweets: [], loadingTweets: false });
       }
-
-      this.setState({ tweets: newTweets, loadingTweets: false });
     });
   };
 
   fetchProfile = () => {
     this.setState({ loadingProfile: true }, async () => {
       try {
-        const res = await fetch(
-          `/api/get-twitter-profile.js?screen_name=${this.state.screenName}`
-        );
+        const res = await fetch(`/api/get-twitter-profile.js?screen_name=${this.state.screenName}`);
 
         const profile = await res.json();
 
@@ -100,10 +100,7 @@ class TwitterFeed extends Component {
 
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
     const paddingToBottom = 400;
-    return (
-      layoutMeasurement.height + contentOffset.y >=
-      contentSize.height - paddingToBottom
-    );
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
   };
 
   handleInputChange = e => {
@@ -111,7 +108,7 @@ class TwitterFeed extends Component {
   };
 
   handleKeyPress = e => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       if (this.state.lastSearch !== this.state.screenName) {
         this.fetchProfile();
         this.fetchTweets();
@@ -128,7 +125,7 @@ class TwitterFeed extends Component {
   };
 
   handleDocumentClick = e => {
-    if (e.target.nodeName !== "INPUT") {
+    if (e.target.nodeName !== 'INPUT') {
       this.handleInputBlur();
     }
   };
@@ -140,32 +137,24 @@ class TwitterFeed extends Component {
   };
 
   render() {
+    const { profile, loadingProfile, tweets, loadingTweets, screenName, inputFocused } = this.state;
+
     return (
-      <div
-        onClick={this.handleDocumentClick}
-        style={{ height: "100%", width: "100%" }}
-      >
+      <div onClick={this.handleDocumentClick} style={{ height: '100%', width: '100%' }}>
         <Head>
           <title>Twitter Profile Search</title>
         </Head>
-        <View
-          style={styles.container}
-          onTouchStart={this.handleInputFocusAndBlur}
-        >
+        <View style={styles.container} onTouchStart={this.handleInputFocusAndBlur}>
           <div className="header">
             <div className="header-content">
               <TextInput
                 ref="searchInput"
                 placeholder="Search user by @"
-                value={this.state.screenName}
+                value={screenName}
                 onChange={this.handleInputChange}
                 style={[
                   styles.searchInput,
-                  this.state.inputFocused && {
-                    color: "#1EA1F2",
-                    borderColor: "#1EA1F2",
-                    backgroundColor: "#fff"
-                  }
+                  inputFocused && { color: '#1EA1F2', borderColor: '#1EA1F2', backgroundColor: '#fff' }
                 ]}
                 onKeyPress={this.handleKeyPress}
                 onFocus={this.handleInputFocus}
@@ -180,15 +169,15 @@ class TwitterFeed extends Component {
             scrollEventThrottle={400}
           >
             <div className="card-container">
-              {!this.state.loadingProfile && (
+              {!loadingProfile && profile && (
                 <div className="profile-card">
-                  <ProfileCard profile={this.state.profile} />
+                  <ProfileCard profile={profile} />
                 </div>
               )}
 
-              {this.state.tweets.map(item => this.renderItem(item))}
+              {tweets.map(item => this.renderItem(item))}
 
-              <LoadingCard isLoading={this.state.loadingTweets} />
+              <LoadingCard isLoading={loadingTweets} />
             </div>
           </ScrollView>
 

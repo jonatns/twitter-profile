@@ -1,7 +1,7 @@
-import React from "react";
-import Document, { Head, Main, NextScript } from "next/document";
-import flush from "styled-jsx/server";
-import { AppRegistry } from "react-native";
+import React from 'react';
+import Document, { Head, Main, NextScript } from 'next/document';
+import flush from 'styled-jsx/server';
+import { AppRegistry } from 'react-native';
 
 // Force Next-generated DOM elements to fill their parent's height.
 // Not required for using of react-native-web, but helps normalize
@@ -15,16 +15,13 @@ const normalizeNextElements = `
 
 export default class MyDocument extends Document {
   static async getInitialProps({ renderPage }) {
-    AppRegistry.registerComponent("Main", () => Main);
-    const { getStyleElement } = AppRegistry.getApplication("Main");
+    AppRegistry.registerComponent('Main', () => Main);
+    const { getStyleElement } = AppRegistry.getApplication('Main');
 
     const page = renderPage();
     const styles = [
-      <style
-        key="_next-styles"
-        dangerouslySetInnerHTML={{ __html: normalizeNextElements }}
-      />,
-      getStyleElement({ key: "_react-native-web-styles" })
+      <style key="_next-styles" dangerouslySetInnerHTML={{ __html: normalizeNextElements }} />,
+      getStyleElement({ key: '_react-native-web-styles' })
     ];
     return { ...page, styles };
   }
@@ -33,20 +30,17 @@ export default class MyDocument extends Document {
     const styles = flush();
 
     return (
-      <html style={{ height: "100%", width: "100%" }}>
+      <html style={{ height: '100%', width: '100%' }}>
         <Head>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
           {styles}
         </Head>
         <body
           style={{
-            height: "100%",
-            width: "100%",
-            overflowY: "scroll"
+            height: '100%',
+            width: '100%',
+            overflowY: 'scroll'
           }}
         >
           <Main />
