@@ -1,3 +1,3 @@
 module.exports = (req, res) => {
-  res.end(new Date().toString());
+  res.end("Success!");
 };
