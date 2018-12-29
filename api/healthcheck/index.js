@@ -15,8 +15,8 @@ module.exports = (req, res) => {
     twitter.getCustomApiCall(
       "/users/show.json",
       { screen_name: "jonat_ns" },
-      err => resolve(err),
+      err => reject(err),
       data => resolve(JSON.parse(data))
     );
-  });
+  }).resolve();
 };
