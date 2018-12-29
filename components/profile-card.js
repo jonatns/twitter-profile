@@ -1,15 +1,15 @@
-import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import React from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
 
-import Card from "./card";
+import Card from './card';
 
 const styles = StyleSheet.create({
   profileName: {
     marginTop: 10,
-    fontWeight: "bold"
+    fontWeight: 'bold'
   },
   screenName: {
-    color: "rgb(101, 119, 134)"
+    color: 'rgb(101, 119, 134)'
   },
   profileDescription: {
     marginTop: 10,
@@ -20,10 +20,10 @@ const styles = StyleSheet.create({
     marginBottom: -3
   },
   inline: {
-    flexDirection: "row"
+    flexDirection: 'row'
   },
   bold: {
-    fontWeight: "bold"
+    fontWeight: 'bold'
   },
   followers: {
     marginLeft: 20
@@ -50,13 +50,11 @@ export default ({ profile }) => {
     followers_count
   } = profile;
 
-  const imageUrl = profile_image_url_https.replace("_normal", "");
+  const imageUrl = profile_image_url_https.replace('_normal', '');
 
   return (
     <Card style={{ marginBottom: 10, padding: 10 }}>
-      <div className="profile-banner">
-        {profile_banner_url && <Image source={{ uri: profile_banner_url }} />}
-      </div>
+      <div className="profile-banner">{profile_banner_url && <Image source={{ uri: profile_banner_url }} />}</div>
       <div className="profile-image-container">
         <Image source={{ uri: imageUrl }} />
       </div>

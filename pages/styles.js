@@ -1,16 +1,16 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "column",
-    height: "100%"
+    flexDirection: 'column',
+    height: '100%'
   },
   content: {
-    backgroundColor: "rgb(230, 236, 240)"
+    backgroundColor: 'rgb(230, 236, 240)'
   },
   scrollViewContainer: {
-    width: "100%"
+    width: '100%'
   },
   searchInput: {
     paddingLeft: 15,
@@ -18,9 +18,9 @@ export default StyleSheet.create({
     paddingBottom: 6,
     paddingRight: 15,
     borderRadius: 50,
-    backgroundColor: "#E6ECF0",
-    outline: "none",
-    borderColor: "#E6ECF0",
+    backgroundColor: '#E6ECF0',
+    outline: 'none',
+    borderColor: '#E6ECF0',
     borderWidth: 1
   }
 });
