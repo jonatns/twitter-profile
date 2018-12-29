@@ -41,7 +41,7 @@ export default ({ profile }) => {
 
   const {
     name,
-    profile_image_url,
+    profile_image_url_https,
     screen_name,
     profile_banner_url,
     description,
@@ -50,7 +50,7 @@ export default ({ profile }) => {
     followers_count
   } = profile;
 
-  const imageUrl = profile_image_url.replace("_normal", "");
+  const imageUrl = profile_image_url_https.replace("_normal", "");
 
   return (
     <Card style={{ marginBottom: 10, padding: 10 }}>

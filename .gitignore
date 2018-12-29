@@ -1,4 +1,6 @@
 node_modules
 .env
+now-secrets.json
 .next
 package-lock.json
+yarn-error.log
