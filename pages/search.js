@@ -207,7 +207,7 @@ class TwitterFeed extends Component {
 
               {tweets.map(item => this.renderItem(item))}
 
-              <LoadingCard isLoading={loadingTweets} />
+              {tweets && tweets.length > 0 && <LoadingCard isLoading={loadingTweets} />}
             </div>
           </ScrollView>
 

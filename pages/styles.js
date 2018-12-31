@@ -10,6 +10,7 @@ export default StyleSheet.create({
     backgroundColor: 'rgb(230, 236, 240)'
   },
   scrollViewContainer: {
+    flexGrow: 1,
     width: '100%'
   },
   searchInput: {
