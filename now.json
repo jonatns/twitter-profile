@@ -1,5 +1,6 @@
 {
   "version": 2,
+
   "builds": [
     { "src": "next.config.js", "use": "@now/next" },
     {
@@ -7,6 +8,7 @@
       "use": "@now/node"
     }
   ],
+  "alias": ["twitter-profile-search"],
   "routes": [
     {
       "src": "/api/(.*)",
