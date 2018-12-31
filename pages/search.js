@@ -232,7 +232,7 @@ class TwitterFeed extends Component {
               display: flex;
               justify-content: center;
               background-color: #fff;
-              height: 50px;
+              height: 53px;
               border-bottom: 1px solid #b0bec5;
             }
             :global(.header-content) {
@@ -242,7 +242,7 @@ class TwitterFeed extends Component {
             }
             :global(.card-container) {
               align-self: center;
-              margin-top: 50px;
+              margin-top: 63px;
               width: 600px;
             }
             :global(.profile-card) {
@@ -255,6 +255,7 @@ class TwitterFeed extends Component {
               }
               :global(.card-container) {
                 width: 100%;
+                margin-top: 53px;
               }
               :global(*) {
                 font-size: 14px !important;
