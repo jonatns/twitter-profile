@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer-core');
+const chrome = require('chrome-aws-lambda');
 const { parse } = require('url');
 
 module.exports = async (req, res) => {
