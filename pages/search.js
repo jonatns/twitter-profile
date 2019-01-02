@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   TextInput
 } from 'react-native';
+import ContentLoader from 'react-content-loader';
 
 import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
@@ -126,8 +127,18 @@ class TwitterFeed extends Component {
     }
   };
 
+  renderUrlPreview = url => {
+    return (
+      <View style={styles.linkPreviewContainer}>
+        <Image
+          source="https://pbs.twimg.com/card_img/1075890177669705728/Mr8Ip5yN?format=jpg&name=small"
+          style={styles.linkPreviewImage}
+        />
+      </View>
+    );
+  };
+
   renderTweet = ({ id, text, entities }) => {
-    console.log(entities);
     return (
       <TouchableWithoutFeedback>
         <Card>
@@ -135,7 +146,7 @@ class TwitterFeed extends Component {
           {entities.media && (
             <Image source={entities.media[0].media_url_https} style={styles.tweetMedia} className="tweet-media" />
           )}
-          {entities.urls && entities.urls.length > 0 && <Text>{entities.urls[0].expanded_url}</Text>}
+          {entities.urls && entities.urls.length > 0 && this.renderUrlPreview(entities.urls[0].expanded_url)}
         </Card>
       </TouchableWithoutFeedback>
     );

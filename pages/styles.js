@@ -46,5 +46,18 @@ export default StyleSheet.create({
     borderColor: 'rgb(230, 236, 240)',
     borderWidth: 1,
     marginTop: 10
+  },
+  linkPreviewContainer: {
+    marginTop: 10,
+    borderRadius: 15,
+    borderColor: 'rgb(230, 236, 240)',
+    borderWidth: 1,
+    height: 124
+  },
+  linkPreviewImage: {
+    height: '100%',
+    width: 124,
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15
   }
 });
