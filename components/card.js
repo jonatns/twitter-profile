@@ -7,11 +7,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     backgroundColor: '#fff',
     padding: 10,
-    flex: 1,
-    minHeight: 200
+    paddingBottom: 20,
+    minHeight: 60
   }
 });
 
-export default ({ children }) => {
-  return <View style={styles.container}>{children}</View>;
+export default ({ children, style }) => {
+  return <View style={[styles.container, style]}>{children}</View>;
 };

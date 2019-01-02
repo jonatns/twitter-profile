@@ -30,21 +30,27 @@ export default class MyDocument extends Document {
     const styles = flush();
 
     return (
-      <html style={{ height: '100%', width: '100%' }}>
+      <html>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
           {styles}
         </Head>
-        <body
-          style={{
-            height: '100%',
-            width: '100%',
-            overflowY: 'scroll'
-          }}
-        >
+        <body>
           <Main />
           <NextScript />
+          <style jsx>{`
+            :global(html) {
+              font-size: 14px !important;
+              fontfamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif' !important;
+            }
+            :global(body) {
+              height: 100%;
+              width: 100%;
+              overflow-y: scroll;
+              overscroll-behavior-y: none;
+              background-color: #fff;
+            }
+          `}</style>
         </body>
       </html>
     );

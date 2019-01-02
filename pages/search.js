@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import { withRouter } from 'next/router';
 import {
   StyleSheet,
@@ -8,43 +9,59 @@ import {
   Image,
   Animated,
   TouchableWithoutFeedback,
-  ScrollView,
-  Dimensions,
+  FlatList,
   ActivityIndicator,
   TouchableOpacity,
   TextInput
 } from 'react-native';
+
 import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
 import { parse } from 'url';
+import MicrolinkCard from '@microlink/react';
 
 import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
 import LoadingCard from '../components/loading-card';
 
+import serializeTweets from '../utils/serialize-tweets';
+
 import styles from './styles';
 
 class TwitterFeed extends Component {
   static getInitialProps({ query }) {
-    return { q: query.q || 'jonat_ns' };
+    return { q: query.q || '@jonat_ns' };
   }
 
   state = {
     tweets: [],
-    loadingTweets: true,
-    loadingProfile: true,
+    loadingTweets: false,
+    loadingProfile: false,
     lastSearch: this.props.q,
     screenName: this.props.q,
     profile: null,
     inputFocused: false,
-    searchResults: ['test1', 'test2'],
-    smallestI: null
+    smallestId: null
   };
 
   componentDidMount() {
+    document.addEventListener('click', this.handleDocumentClick);
     this.fetchProfile();
     this.fetchTweets();
     this.updateUrl();
+  }
+
+  componentDidUpdate(previousProps) {
+    if (previousProps.router.query.q !== this.props.router.query.q) {
+      this.setState({ screenName: this.props.router.query.q, profile: null, tweets: [], smallestId: null }, () => {
+        this.fetchProfile();
+        this.fetchTweets();
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
   }
 
   updateUrl = () => {
@@ -53,80 +70,82 @@ class TwitterFeed extends Component {
     router.push(`/search?q=${screenName}`);
   };
 
-  fetchProfile = () => {
-    this.setState({ loadingProfile: true }, async () => {
-      const { screenName } = this.state;
+  fetchProfile = async () => {
+    const { screenName } = this.state;
 
-      try {
-        const resp = await fetch(`/api/get-twitter-profile.js?screen_name=${screenName}`);
-        const { status, data } = await resp.json();
+    this.setState({ loadingProfile: true });
 
-        if (status === 'success') {
-          this.setState({ profile: JSON.parse(data), loadingProfile: false });
-        } else {
-          throw new Error('Failed to fetch profile');
-        }
-      } catch (err) {
-        console.log(err);
-        this.setState({ profile: null, loadingProfile: false });
+    try {
+      const resp = await fetch(
+        `https://twitter-profile-search.now.sh/api/get-twitter-profile.js?screen_name=${screenName}`
+      );
+      const { status, data } = await resp.json();
+
+      if (status === 'success') {
+        this.setState({ profile: JSON.parse(data), loadingProfile: false });
+      } else {
+        throw new Error('Failed to fetch profile');
       }
-    });
-  };
-
-  fetchTweets = () => {
-    const { lastSearch, screenName } = this.state;
-    const preFetchState = { loadingTweets: true };
-
-    if (lastSearch !== screenName) {
-      preFetchState.lastSearch = screenName;
-      preFetchState.tweets = [];
-      preFetchState.smallestId = null;
+    } catch (err) {
+      console.log(err);
+      this.setState({ profile: null, loadingProfile: false });
     }
-
-    this.setState(preFetchState, async () => {
-      const { smallestId, screenName, tweets } = this.state;
-
-      try {
-        const resp = await fetch(`/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`);
-        const { status, data } = await resp.json();
-
-        if (status === 'success') {
-          const jsonData = JSON.parse(data);
-          const updatedState = { loadingTweets: false };
-
-          if (jsonData && jsonData.length > 0) {
-            updatedState.smallestId = bigInt(jsonData[jsonData.length - 1].id_str)
-              .minus(1)
-              .toString();
-
-            updatedState.tweets = [...tweets, ...jsonData];
-          }
-
-          this.setState(updatedState);
-        } else {
-          throw new Error('Failed to fetch tweets');
-        }
-      } catch (err) {
-        console.log(err);
-        this.setState({ smallestId: null, tweets: [], loadingTweets: false });
-      }
-    });
   };
 
-  renderItem = ({ id, text }) => {
+  fetchTweets = async () => {
+    const { lastSearch, screenName, smallestId, tweets } = this.state;
+
+    this.setState({ loadingTweets: true, lastSearch: screenName });
+
+    console.log('fetching', this.onEndReachedCalledDuringMomentum);
+
+    try {
+      const resp = await fetch(
+        `https://twitter-profile-search.now.sh/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`
+      );
+      const { status, data } = await resp.json();
+
+      if (status === 'success') {
+        const jsonData = JSON.parse(data);
+        const updatedState = { loadingTweets: false };
+
+        if (jsonData && jsonData.length > 0) {
+          updatedState.smallestId = bigInt(jsonData[jsonData.length - 1].id_str)
+            .minus(1)
+            .toString();
+
+          updatedState.tweets = [...tweets, ...jsonData];
+        }
+
+        this.setState(updatedState);
+      } else {
+        throw new Error('Failed to fetch tweets');
+      }
+    } catch (err) {
+      console.log(err);
+      this.setState({ smallestId: null, tweets: [], loadingTweets: false });
+    }
+  };
+
+  renderTweet = ({ id, text, entities }) => {
+    console.log(entities);
     return (
-      <div className="hover" key={id}>
-        <TouchableWithoutFeedback>
-          <Card>
-            <Text>{text}</Text>
-          </Card>
-        </TouchableWithoutFeedback>
-      </div>
+      <TouchableWithoutFeedback>
+        <Card>
+          <Text>{serializeTweets(text)}</Text>
+          {entities.media && (
+            <Image source={entities.media[0].media_url_https} style={styles.tweetMedia} className="tweet-media" />
+          )}
+          {entities.urls && entities.urls.length > 0 && (
+            <MicrolinkCard url={entities.urls[0].expanded_url} target="_blank" />
+          )}
+        </Card>
+      </TouchableWithoutFeedback>
     );
   };
 
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
-    const paddingToBottom = 400;
+    const paddingToBottom = 200;
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
   };
 
@@ -138,9 +157,11 @@ class TwitterFeed extends Component {
     if (e.key === 'Enter') {
       const { lastSearch, screenName } = this.state;
       if (lastSearch !== screenName && screenName !== '') {
-        this.updateUrl();
-        this.fetchProfile();
-        this.fetchTweets();
+        this.setState({ profile: null, tweets: [], smallestId: null }, () => {
+          this.updateUrl();
+          this.fetchProfile();
+          this.fetchTweets();
+        });
       }
     }
   };
@@ -166,104 +187,85 @@ class TwitterFeed extends Component {
     }
   };
 
+  fetchMoreTweets = () => {
+    if (!this.state.loadingTweets) {
+      this.fetchTweets();
+    }
+  };
+
   render() {
-    const { profile, loadingProfile, tweets, loadingTweets, screenName, inputFocused } = this.state;
+    const { profile, loadingProfile, tweets, loadingTweets, screenName, inputFocused, screenWidth } = this.state;
+
+    const isMobile = screenWidth < 681;
 
     return (
-      <div onClick={this.handleDocumentClick} style={{ height: '100%', width: '100%' }}>
+      <View style={styles.container}>
         <Head>
           <title>Twitter Profile Search</title>
         </Head>
-        <View style={styles.container} onTouchStart={this.handleInputFocusAndBlur}>
-          <div className="header">
-            <div className="header-content">
-              <TextInput
-                ref="searchInput"
-                placeholder="Search user by @"
-                value={screenName}
-                onChange={this.handleInputChange}
-                style={[
-                  styles.searchInput,
-                  inputFocused && { color: '#1EA1F2', borderColor: '#1EA1F2', backgroundColor: '#fff' }
-                ]}
-                onKeyPress={this.handleKeyPress}
-                onFocus={this.handleInputFocus}
-                onBlur={this.handleInputBlur}
-              />
-            </div>
-          </div>
-          <ScrollView
-            style={styles.content}
-            contentContainerStyle={[styles.scrollViewContainer]}
-            onScroll={this.handleScrollEvent}
-            scrollEventThrottle={400}
-          >
-            <div className="card-container">
-              {!loadingProfile && (
-                <div className="profile-card">
-                  <ProfileCard profile={profile} />
-                </div>
-              )}
 
-              {tweets.map(item => this.renderItem(item))}
-
-              {tweets && tweets.length > 0 && <LoadingCard isLoading={loadingTweets} />}
-            </div>
-          </ScrollView>
-
-          <style jsx>{`
-            :global(*) {
-              font-size: 16px !important;
-              fontfamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif' !important;
-            }
-            :global(.hover) {
-              cursor: pointer;
-              transition: all 0.25s ease-in-out;
-            }
-            :global(.hover):hover {
-              opacity: 0.6;
-            }
-            :global(.header) {
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              z-index: 3000;
-              display: flex;
-              justify-content: center;
-              background-color: #fff;
-              height: 53px;
-              border-bottom: 1px solid #b0bec5;
-            }
-            :global(.header-content) {
-              width: 600px;
-              align-self: center;
-              padding-left: 10px;
-            }
-            :global(.card-container) {
-              align-self: center;
-              margin-top: 63px;
-              width: 600px;
-            }
-            :global(.profile-card) {
-              margin-bottom: 10px;
-            }
-
-            @media only screen and (max-width: 680px) {
-              :global(.header-content) {
-                width: 100%;
-              }
-              :global(.card-container) {
-                width: 100%;
-                margin-top: 53px;
-              }
-              :global(*) {
-                font-size: 14px !important;
-              }
-            }
-          `}</style>
+        <View style={styles.header}>
+          <View className="header-content">
+            <TextInput
+              ref="searchInput"
+              placeholder="Search user by @"
+              value={screenName}
+              onChange={this.handleInputChange}
+              style={[
+                styles.searchInput,
+                inputFocused && { color: '#1EA1F2', borderColor: '#1EA1F2', backgroundColor: '#fff' }
+              ]}
+              onKeyPress={this.handleKeyPress}
+              onFocus={this.handleInputFocus}
+              onBlur={this.handleInputBlur}
+            />
+          </View>
         </View>
-      </div>
+        <View style={styles.main}>
+          <FlatList
+            className="list"
+            contentContainerStyle={styles.listContent}
+            data={tweets}
+            keyExtractor={item => item.id + ''}
+            renderItem={({ item, index }) => {
+              return this.renderTweet(item);
+            }}
+            onEndReached={this.fetchMoreTweets}
+            onEndReachedThreshold={0.5}
+            ListHeaderComponent={() => (profile ? <ProfileCard profile={profile} /> : null)}
+            ListFooterComponent={() => (loadingProfile || loadingTweets ? <LoadingCard /> : null)}
+          />
+        </View>
+
+        <style jsx>{`
+          :global(.header-content) {
+            width: 600px;
+            align-self: center;
+            padding-left: 10px;
+          }
+          :global(.tweet-links) {
+            color: #1ea1f2;
+            text-decoration: none;
+          }
+          :global(.tweet-links):hover {
+            text-decoration: underline;
+          }
+          :global(.microlink_card) {
+            border-radius: 15px;
+            margin-top: 10px;
+          }
+
+          @media only screen and (max-width: 680px) {
+            :global(.header-content) {
+              width: 100%;
+            }
+            :global(.list > div) {
+              width: 100%;
+              margin-top: 53px;
+            }
+          }
+        `}</style>
+      </View>
     );
   }
 }

@@ -2,16 +2,30 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
+    flex: 1
+  },
+  header: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 3000,
     flex: 1,
-    flexDirection: 'column',
-    height: '100%'
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    height: 53,
+    borderBottomWidth: 1,
+    borderBottomColor: '#b0bec5'
   },
-  content: {
-    backgroundColor: 'rgb(230, 236, 240)'
+  main: {
+    flex: 1,
+    backgroundColor: 'rgb(230, 236, 240)',
+    height: '100vh'
   },
-  scrollViewContainer: {
-    flexGrow: 1,
-    width: '100%'
+  listContent: {
+    alignSelf: 'center',
+    marginTop: 63,
+    width: 600
   },
   searchInput: {
     paddingLeft: 15,
@@ -23,5 +37,14 @@ export default StyleSheet.create({
     outline: 'none',
     borderColor: '#E6ECF0',
     borderWidth: 1
+  },
+  tweetMedia: {
+    flex: 1,
+    height: 300,
+    width: '100%',
+    borderRadius: 15,
+    borderColor: 'rgb(230, 236, 240)',
+    borderWidth: 1,
+    marginTop: 10
   }
 });
