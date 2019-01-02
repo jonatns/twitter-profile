@@ -18,7 +18,6 @@ import {
 import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
 import { parse } from 'url';
-import MicrolinkCard from '@microlink/react';
 
 import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
@@ -136,9 +135,7 @@ class TwitterFeed extends Component {
           {entities.media && (
             <Image source={entities.media[0].media_url_https} style={styles.tweetMedia} className="tweet-media" />
           )}
-          {entities.urls && entities.urls.length > 0 && (
-            <MicrolinkCard url={entities.urls[0].expanded_url} target="_blank" />
-          )}
+          {entities.urls && entities.urls.length > 0 && <Text>{entities.urls[0].expanded_url}</Text>}
         </Card>
       </TouchableWithoutFeedback>
     );

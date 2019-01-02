@@ -12,7 +12,6 @@
   "author": "Jonathan Navarrete <jonatns@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@microlink/react": "^3.0.5",
     "big-integer": "^1.6.28",
     "chrome-aws-lambda": "^1.11.2",
     "isomorphic-unfetch": "^3.0.0",
