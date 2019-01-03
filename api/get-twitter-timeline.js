@@ -2,12 +2,13 @@ const fetch = require('isomorphic-unfetch');
 const { parse } = require('url');
 const twitterAPI = require('./utils/twitter-api')();
 
-const fetchLinkPreview = async url => {
-  const resp = await fetch(`https://page.rest/fetch?token=${process.env.PAGE_REST_TOKEN}&url=${url}`);
-  return resp.json();
+const fetchLinkPreview = url => {
+  return fetch(`https://page.rest/fetch?token=${process.env.PAGE_REST_TOKEN}&url=${url}`);
 };
 
 module.exports = async (req, res) => {
+  console.time('get-twitter-timeline');
+
   const { query } = parse(req.url, true);
   const { max_id, screen_name } = query;
   const params = { screen_name };
@@ -26,15 +27,29 @@ module.exports = async (req, res) => {
     },
     async resp => {
       const data = JSON.parse(resp);
-      for (let [index, value] of data.entries()) {
-        if (value.entities.urls.length > 0 && value.entities.urls[0].expanded_url) {
-          let preview = await fetchLinkPreview(value.entities.urls[0].expanded_url);
-          data[index].entities.urls[0].preview = preview;
+      const promises = [];
+      const indexes = [];
+
+      for (let index = 0; index < data.length; index++) {
+        if (data[index].entities.urls.length > 0 && data[index].entities.urls[0].expanded_url) {
+          promises.push(fetchLinkPreview(data[index].entities.urls[0].expanded_url));
+          indexes.push(index);
         }
       }
 
+      const responses = await Promise.all(promises);
+      const previews = await Promise.all(responses.map(async resp => await resp.json()));
+
+      for (let index = 0; index < indexes.length; index++) {
+        data[indexes[index]].entities.urls[0].preview = previews[index];
+      }
+
+      const dataString = JSON.stringify(data);
+
+      console.timeEnd('get-twitter-timeline');
+
       res.statusCode = 200;
-      res.end(JSON.stringify(data));
+      res.end(dataString);
     }
   );
 };
