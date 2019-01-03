@@ -14,11 +14,11 @@ import {
   TouchableOpacity,
   TextInput
 } from 'react-native';
+import ContentLoader from 'react-content-loader';
 
 import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
 import { parse } from 'url';
-import MicrolinkCard from '@microlink/react';
 
 import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
@@ -30,7 +30,7 @@ import styles from './styles';
 
 class TwitterFeed extends Component {
   static getInitialProps({ query }) {
-    return { q: query.q || '@jonat_ns' };
+    return { q: query.q || 'jonat_ns' };
   }
 
   state = {
@@ -79,10 +79,10 @@ class TwitterFeed extends Component {
       const resp = await fetch(
         `https://twitter-profile-search.now.sh/api/get-twitter-profile.js?screen_name=${screenName}`
       );
-      const { status, data } = await resp.json();
 
-      if (status === 'success') {
-        this.setState({ profile: JSON.parse(data), loadingProfile: false });
+      if (resp.status === 200) {
+        const data = await resp.json();
+        this.setState({ profile: data, loadingProfile: false });
       } else {
         throw new Error('Failed to fetch profile');
       }
@@ -97,24 +97,21 @@ class TwitterFeed extends Component {
 
     this.setState({ loadingTweets: true, lastSearch: screenName });
 
-    console.log('fetching', this.onEndReachedCalledDuringMomentum);
-
     try {
       const resp = await fetch(
         `https://twitter-profile-search.now.sh/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`
       );
-      const { status, data } = await resp.json();
 
-      if (status === 'success') {
-        const jsonData = JSON.parse(data);
+      if (resp.status === 200) {
+        const data = await resp.json();
         const updatedState = { loadingTweets: false };
 
-        if (jsonData && jsonData.length > 0) {
-          updatedState.smallestId = bigInt(jsonData[jsonData.length - 1].id_str)
+        if (data && data.length > 0) {
+          updatedState.smallestId = bigInt(data[data.length - 1].id_str)
             .minus(1)
             .toString();
 
-          updatedState.tweets = [...tweets, ...jsonData];
+          updatedState.tweets = [...tweets, ...data];
         }
 
         this.setState(updatedState);
@@ -127,8 +124,21 @@ class TwitterFeed extends Component {
     }
   };
 
+  renderUrlPreview = ({ title, description, logo }) => {
+    return (
+      <View style={styles.linkPreviewContainer} className="link-preview-container">
+        <View style={styles.linkPreviewImageWrapper} className="link-preview-image-wrapper">
+          <Image style={styles.linkPreviewImage} source={logo} />
+        </View>
+        <View style={styles.linkPreviewContent} className="link-preview-content">
+          <Text>{title}</Text>
+          <Text>{description}</Text>
+        </View>
+      </View>
+    );
+  };
+
   renderTweet = ({ id, text, entities }) => {
-    console.log(entities);
     return (
       <TouchableWithoutFeedback>
         <Card>
@@ -136,9 +146,7 @@ class TwitterFeed extends Component {
           {entities.media && (
             <Image source={entities.media[0].media_url_https} style={styles.tweetMedia} className="tweet-media" />
           )}
-          {entities.urls && entities.urls.length > 0 && (
-            <MicrolinkCard url={entities.urls[0].expanded_url} target="_blank" />
-          )}
+          {entities.urls && entities.urls.length > 0 && this.renderUrlPreview(entities.urls[0].preview)}
         </Card>
       </TouchableWithoutFeedback>
     );
@@ -262,6 +270,17 @@ class TwitterFeed extends Component {
             :global(.list > div) {
               width: 100%;
               margin-top: 53px;
+            }
+            :global(.link-preview-container) {
+              height: 86px;
+            }
+            :global(.link-preview-image-wrapper) {
+              width: 86px;
+            }
+            :global(.link-preview-content) {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
             }
           }
         `}</style>

@@ -5,10 +5,7 @@
     { "src": "next.config.js", "use": "@now/next" },
     {
       "src": "api/*.js",
-      "use": "@now/node",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+      "use": "@now/node"
     }
   ],
   "alias": ["twitter-profile-search"],
@@ -26,6 +23,7 @@
     "TWITTER_CONSUMER_KEY": "@twitter-consumer-key",
     "TWITTER_CONSUMER_SECRET": "@twitter-consumer-secret",
     "TWITTER_ACCESS_TOKEN": "@twitter-access-token",
-    "TWITTER_ACCESS_TOKEN_SECRET": "@twitter-access-token-secret"
+    "TWITTER_ACCESS_TOKEN_SECRET": "@twitter-access-token-secret",
+    "PAGE_REST_TOKEN": "@page-rest-token"
   }
 }
