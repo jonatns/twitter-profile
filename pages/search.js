@@ -124,17 +124,24 @@ class TwitterFeed extends Component {
     }
   };
 
-  renderUrlPreview = ({ title, description, logo }) => {
+  renderUrlPreview = ({ title, description, icons, logo, expanded_url }) => {
+    const imageSource = logo || (icons && icons.length > 0 && icons[0]);
     return (
-      <View style={styles.linkPreviewContainer} className="link-preview-container">
-        <View style={styles.linkPreviewImageWrapper} className="link-preview-image-wrapper">
-          <Image style={styles.linkPreviewImage} source={logo} />
+      <a href={expanded_url} target="_blank" className="link-preview-link">
+        <View style={styles.linkPreviewContainer} className="link-preview-container">
+          <View style={styles.linkPreviewImageWrapper} className="link-preview-image-wrapper">
+            {imageSource && <Image style={styles.linkPreviewImage} source={imageSource} />}
+          </View>
+          <View style={styles.linkPreviewContent} className="link-preview-content">
+            <Text numberOfLines={1} style={styles.linkPreviewTitle}>
+              {title}
+            </Text>
+            <Text numberOfLines={1} style={styles.linkPreviewDescription}>
+              {description}
+            </Text>
+          </View>
         </View>
-        <View style={styles.linkPreviewContent} className="link-preview-content">
-          <Text>{title}</Text>
-          <Text>{description}</Text>
-        </View>
-      </View>
+      </a>
     );
   };
 
@@ -144,9 +151,13 @@ class TwitterFeed extends Component {
         <Card>
           <Text>{serializeTweets(text)}</Text>
           {entities.media && (
-            <Image source={entities.media[0].media_url_https} style={styles.tweetMedia} className="tweet-media" />
+            <View style={styles.tweetMediaWrapper} className="tweet-media-wrapper">
+              <Image source={entities.media[0].media_url_https} style={styles.tweetMediaImage} />
+            </View>
           )}
-          {entities.urls && entities.urls.length > 0 && this.renderUrlPreview(entities.urls[0].preview)}
+          {entities.urls &&
+            entities.urls.length > 0 &&
+            this.renderUrlPreview({ ...entities.urls[0].preview, expanded_url: entities.urls[0].expanded_url })}
         </Card>
       </TouchableWithoutFeedback>
     );
@@ -262,6 +273,9 @@ class TwitterFeed extends Component {
             border-radius: 15px;
             margin-top: 10px;
           }
+          :global(.link-preview-link) {
+            text-decoration: none !important;
+          }
 
           @media only screen and (max-width: 680px) {
             :global(.header-content) {
@@ -270,6 +284,9 @@ class TwitterFeed extends Component {
             :global(.list > div) {
               width: 100%;
               margin-top: 53px;
+            }
+            :global(.tweet-media-wrapper) {
+              height: 150px;
             }
             :global(.link-preview-container) {
               height: 86px;
@@ -281,6 +298,7 @@ class TwitterFeed extends Component {
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
+              text-decoration: none;
             }
           }
         `}</style>

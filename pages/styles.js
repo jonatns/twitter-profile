@@ -38,7 +38,7 @@ export default StyleSheet.create({
     borderColor: '#E6ECF0',
     borderWidth: 1
   },
-  tweetMedia: {
+  tweetMediaWrapper: {
     flex: 1,
     height: 300,
     width: '100%',
@@ -46,6 +46,10 @@ export default StyleSheet.create({
     borderColor: 'rgb(230, 236, 240)',
     borderWidth: 1,
     marginTop: 10
+  },
+  tweetMediaImage: {
+    flex: 1,
+    borderRadius: 15
   },
   linkPreviewContainer: {
     flex: 1,
@@ -74,5 +78,12 @@ export default StyleSheet.create({
     paddingTop: 20,
     paddingRight: 10,
     paddingLeft: 10
+  },
+  linkPreviewTitle: {
+    color: 'black',
+    lineHeight: 20
+  },
+  linkPreviewDescription: {
+    color: 'rgb(101, 119, 134)'
   }
 });
