@@ -40,7 +40,7 @@ export default class MyDocument extends Document {
           <NextScript />
           <style jsx>{`
             :global(html) {
-              font-size: 14px !important;
+              font-size: 15px !important;
               fontfamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif' !important;
             }
             :global(body) {
