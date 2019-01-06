@@ -37,53 +37,5 @@ export default StyleSheet.create({
     outline: 'none',
     borderColor: '#E6ECF0',
     borderWidth: 1
-  },
-  tweetMediaWrapper: {
-    flex: 1,
-    height: 300,
-    width: '100%',
-    borderRadius: 15,
-    borderColor: 'rgb(230, 236, 240)',
-    borderWidth: 1,
-    marginTop: 10
-  },
-  tweetMediaImage: {
-    flex: 1,
-    borderRadius: 15
-  },
-  linkPreviewContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    marginTop: 10,
-    borderRadius: 15,
-    borderColor: 'rgb(230, 236, 240)',
-    borderWidth: 1,
-    height: 124
-  },
-  linkPreviewImageWrapper: {
-    borderRightColor: 'rgb(230, 236, 240)',
-    borderRightWidth: 1,
-    height: '100%',
-    width: 124,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15
-  },
-  linkPreviewImage: {
-    flex: 1,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15
-  },
-  linkPreviewContent: {
-    flexShrink: 1,
-    paddingTop: 20,
-    paddingRight: 10,
-    paddingLeft: 10
-  },
-  linkPreviewTitle: {
-    color: 'black',
-    lineHeight: 20
-  },
-  linkPreviewDescription: {
-    color: 'rgb(101, 119, 134)'
   }
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 import Card from './card';
+import SerializedTweet from './serialized-tweet';
 
 const styles = StyleSheet.create({
   profileName: {
@@ -63,8 +64,10 @@ export default ({ profile }) => {
         <Text style={styles.profileName}>{name}</Text>
       </div>
       <Text style={styles.screenName}>@{screen_name}</Text>
-      <Text style={styles.profileDescription}>{description}</Text>
-      <Text style={styles.screenName}>{location}</Text>
+      <Text style={styles.profileDescription}>
+        <SerializedTweet>{description}</SerializedTweet>
+      </Text>
+      {location ? <Text style={styles.screenName}>📍{location}</Text> : null}
       <View style={[styles.friendsAndFollowers, styles.inline]}>
         <View style={styles.inline}>
           <Text style={styles.bold}>{friends_count}</Text>

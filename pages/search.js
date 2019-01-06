@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { withRouter } from 'next/router';
@@ -22,9 +22,8 @@ import { parse } from 'url';
 
 import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
+import TweetCard from '../components/tweet-card';
 import LoadingCard from '../components/loading-card';
-
-import serializeTweets from '../utils/serialize-tweets';
 
 import styles from './styles';
 
@@ -124,45 +123,6 @@ class TwitterFeed extends Component {
     }
   };
 
-  renderUrlPreview = ({ title, description, icons, logo, expanded_url }) => {
-    const imageSource = logo || (icons && icons.length > 0 && icons[0]);
-    return (
-      <a href={expanded_url} target="_blank" className="link-preview-link">
-        <View style={styles.linkPreviewContainer} className="link-preview-container">
-          <View style={styles.linkPreviewImageWrapper} className="link-preview-image-wrapper">
-            {imageSource && <Image style={styles.linkPreviewImage} source={imageSource} />}
-          </View>
-          <View style={styles.linkPreviewContent} className="link-preview-content">
-            <Text numberOfLines={1} style={styles.linkPreviewTitle}>
-              {title}
-            </Text>
-            <Text numberOfLines={1} style={styles.linkPreviewDescription}>
-              {description}
-            </Text>
-          </View>
-        </View>
-      </a>
-    );
-  };
-
-  renderTweet = ({ id, text, entities }) => {
-    return (
-      <TouchableWithoutFeedback>
-        <Card>
-          <Text>{serializeTweets(text)}</Text>
-          {entities.media && (
-            <View style={styles.tweetMediaWrapper} className="tweet-media-wrapper">
-              <Image source={entities.media[0].media_url_https} style={styles.tweetMediaImage} />
-            </View>
-          )}
-          {entities.urls &&
-            entities.urls.length > 0 &&
-            this.renderUrlPreview({ ...entities.urls[0].preview, expanded_url: entities.urls[0].expanded_url })}
-        </Card>
-      </TouchableWithoutFeedback>
-    );
-  };
-
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
     const paddingToBottom = 200;
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
@@ -222,7 +182,6 @@ class TwitterFeed extends Component {
         <Head>
           <title>Twitter Profile Search</title>
         </Head>
-
         <View style={styles.header}>
           <View className="header-content">
             <TextInput
@@ -246,9 +205,7 @@ class TwitterFeed extends Component {
             contentContainerStyle={styles.listContent}
             data={tweets}
             keyExtractor={item => item.id + ''}
-            renderItem={({ item, index }) => {
-              return this.renderTweet(item);
-            }}
+            renderItem={({ item, index }) => <TweetCard {...item} />}
             onEndReached={this.fetchMoreTweets}
             onEndReachedThreshold={0.5}
             ListHeaderComponent={() => (profile ? <ProfileCard profile={profile} /> : null)}
@@ -262,20 +219,6 @@ class TwitterFeed extends Component {
             align-self: center;
             padding-left: 10px;
           }
-          :global(.tweet-links) {
-            color: #1ea1f2;
-            text-decoration: none;
-          }
-          :global(.tweet-links):hover {
-            text-decoration: underline;
-          }
-          :global(.microlink_card) {
-            border-radius: 15px;
-            margin-top: 10px;
-          }
-          :global(.link-preview-link) {
-            text-decoration: none !important;
-          }
 
           @media only screen and (max-width: 680px) {
             :global(.header-content) {
@@ -284,21 +227,6 @@ class TwitterFeed extends Component {
             :global(.list > div) {
               width: 100%;
               margin-top: 53px;
-            }
-            :global(.tweet-media-wrapper) {
-              height: 150px;
-            }
-            :global(.link-preview-container) {
-              height: 86px;
-            }
-            :global(.link-preview-image-wrapper) {
-              width: 86px;
-            }
-            :global(.link-preview-content) {
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              text-decoration: none;
             }
           }
         `}</style>
