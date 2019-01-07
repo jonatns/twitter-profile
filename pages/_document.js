@@ -20,7 +20,10 @@ export default class MyDocument extends Document {
 
     const page = renderPage();
     const styles = [
-      <style key="_next-styles" dangerouslySetInnerHTML={{ __html: normalizeNextElements }} />,
+      <style
+        key="_next-styles"
+        dangerouslySetInnerHTML={{ __html: normalizeNextElements }}
+      />,
       getStyleElement({ key: '_react-native-web-styles' })
     ];
     return { ...page, styles };
@@ -32,13 +35,22 @@ export default class MyDocument extends Document {
     return (
       <html>
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
           {styles}
         </Head>
         <body>
           <Main />
           <NextScript />
           <style jsx>{`
+            :global(*) {
+              transition: all 0.15s linear;
+            }
+            :global(input) {
+              transition: background-color 0.15s linear, color 0.15s linear;
+            }
             :global(html) {
               font-size: 15px !important;
               fontfamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif' !important;

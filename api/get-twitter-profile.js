@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
     '/users/show.json',
     { screen_name },
     err => {
+      console.log(err);
       res.statusCode = 400;
       res.end(`Failed to fetch twitter profile for user ${screen_name}`);
     },

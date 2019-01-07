@@ -6,15 +6,12 @@ const styles = StyleSheet.create({
   container: {
     lineHeight: 20
   },
-  replyingTo: {
-    color: 'rgb(101, 119, 134)'
-  },
   link: {
     color: '#1ea1f2'
   }
 });
 
-const SerializedTweet = ({ children, replyScreenName }) => {
+const SerializedTweet = ({ children, replyScreenName, theme }) => {
   const content = children.split(/(@[\w_-]+)/gi);
 
   for (let i = 1; i < content.length; i += 2) {
@@ -22,9 +19,14 @@ const SerializedTweet = ({ children, replyScreenName }) => {
       content[i] = (
         <Fragment key={i}>
           <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.replyingTo}>Replying to </Text>
+            <Text style={{ color: theme.subText }}>Replying to </Text>
             <Link href={`/search?q=${content[i].replace('@', '')}`}>
-              <Text accessibilityRole="link" href="" style={styles.link} className="link">
+              <Text
+                accessibilityRole="link"
+                href=""
+                style={styles.link}
+                className="link"
+              >
                 {content[i]}
               </Text>
             </Link>
@@ -37,7 +39,12 @@ const SerializedTweet = ({ children, replyScreenName }) => {
     } else {
       content[i] = (
         <Link href={`/search?q=${content[i].replace('@', '')}`} key={i}>
-          <Text accessibilityRole="link" href="" style={styles.link} className="link">
+          <Text
+            accessibilityRole="link"
+            href=""
+            style={styles.link}
+            className="link"
+          >
             {content[i]}
           </Text>
         </Link>
@@ -46,7 +53,7 @@ const SerializedTweet = ({ children, replyScreenName }) => {
   }
 
   return (
-    <Text style={styles.container}>
+    <Text style={[styles.container, { color: theme.text }]}>
       {content}
       <style jsx>{`
         :global(.link):hover {

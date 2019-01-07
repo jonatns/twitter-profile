@@ -3,7 +3,9 @@ const { parse } = require('url');
 const twitterAPI = require('./utils/twitter-api')();
 
 const fetchLinkPreview = url => {
-  return fetch(`https://page.rest/fetch?token=${process.env.PAGE_REST_TOKEN}&url=${url}`);
+  return fetch(
+    `https://page.rest/fetch?token=${process.env.PAGE_REST_TOKEN}&url=${url}`
+  );
 };
 
 module.exports = async (req, res) => {
@@ -13,7 +15,12 @@ module.exports = async (req, res) => {
   const { max_id, screen_name } = query;
   const params = { screen_name };
 
-  if (max_id && typeof max_id !== 'undefined' && max_id !== 'null' && isFinite(max_id)) {
+  if (
+    max_id &&
+    typeof max_id !== 'undefined' &&
+    max_id !== 'null' &&
+    isFinite(max_id)
+  ) {
     params.max_id = max_id;
   }
 
@@ -22,6 +29,7 @@ module.exports = async (req, res) => {
   twitterAPI.getUserTimeline(
     params,
     err => {
+      console.log(err);
       res.statusCode = 404;
       res.end(`Failed to fetch twitter timeline for user ${screen_name}`);
     },
@@ -31,14 +39,21 @@ module.exports = async (req, res) => {
       const indexes = [];
 
       for (let index = 0; index < data.length; index++) {
-        if (data[index].entities.urls.length > 0 && data[index].entities.urls[0].expanded_url) {
-          promises.push(fetchLinkPreview(data[index].entities.urls[0].expanded_url));
+        if (
+          data[index].entities.urls.length > 0 &&
+          data[index].entities.urls[0].expanded_url
+        ) {
+          promises.push(
+            fetchLinkPreview(data[index].entities.urls[0].expanded_url)
+          );
           indexes.push(index);
         }
       }
 
       const responses = await Promise.all(promises);
-      const previews = await Promise.all(responses.map(async resp => await resp.json()));
+      const previews = await Promise.all(
+        responses.map(async resp => await resp.json())
+      );
 
       for (let index = 0; index < indexes.length; index++) {
         data[indexes[index]].entities.urls[0].preview = previews[index];

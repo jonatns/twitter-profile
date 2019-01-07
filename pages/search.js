@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   TextInput
 } from 'react-native';
-import ContentLoader from 'react-content-loader';
 
 import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
@@ -24,10 +23,11 @@ import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
 import TweetCard from '../components/tweet-card';
 import LoadingCard from '../components/loading-card';
+import ThemeToggler from '../components/theme-toggler';
 
-import styles from './styles';
+import { ThemeContext } from '../components/theme-context';
 
-class TwitterFeed extends Component {
+class Search extends Component {
   static getInitialProps({ query }) {
     return { q: query.q || 'jonat_ns' };
   }
@@ -52,10 +52,18 @@ class TwitterFeed extends Component {
 
   componentDidUpdate(previousProps) {
     if (previousProps.router.query.q !== this.props.router.query.q) {
-      this.setState({ screenName: this.props.router.query.q, profile: null, tweets: [], smallestId: null }, () => {
-        this.fetchProfile();
-        this.fetchTweets();
-      });
+      this.setState(
+        {
+          screenName: this.props.router.query.q,
+          profile: null,
+          tweets: [],
+          smallestId: null
+        },
+        () => {
+          this.fetchProfile();
+          this.fetchTweets();
+        }
+      );
     }
   }
 
@@ -64,9 +72,7 @@ class TwitterFeed extends Component {
   }
 
   updateUrl = () => {
-    const { router } = this.props;
-    const { screenName } = this.state;
-    router.push(`/search?q=${screenName}`);
+    this.props.router.push(`/search?q=${this.state.screenName}`);
   };
 
   fetchProfile = async () => {
@@ -125,7 +131,10 @@ class TwitterFeed extends Component {
 
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
     const paddingToBottom = 200;
-    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
   };
 
   handleInputChange = e => {
@@ -173,33 +182,58 @@ class TwitterFeed extends Component {
   };
 
   render() {
-    const { profile, loadingProfile, tweets, loadingTweets, screenName, inputFocused, screenWidth } = this.state;
-
-    const isMobile = screenWidth < 681;
+    const {
+      profile,
+      loadingProfile,
+      tweets,
+      loadingTweets,
+      screenName,
+      inputFocused
+    } = this.state;
+    const { theme } = this.context;
 
     return (
       <View style={styles.container}>
         <Head>
           <title>Twitter Profile Search</title>
         </Head>
-        <View style={styles.header}>
-          <View className="header-content">
+        <View
+          style={[
+            styles.header,
+            {
+              backgroundColor: theme.primary,
+              borderBottomColor: theme.headerBorder
+            }
+          ]}
+        >
+          <View style={styles.headerContent} className="header-content">
             <TextInput
               ref="searchInput"
               placeholder="Search user by @"
+              placeholderTextColor={theme.subText}
               value={screenName}
               onChange={this.handleInputChange}
               style={[
                 styles.searchInput,
-                inputFocused && { color: '#1EA1F2', borderColor: '#1EA1F2', backgroundColor: '#fff' }
+                {
+                  color: theme.text,
+                  backgroundColor: theme.secondary,
+                  borderColor: theme.secondary
+                },
+                inputFocused && {
+                  color: '#1EA1F2',
+                  borderColor: '#1EA1F2',
+                  backgroundColor: theme.primary
+                }
               ]}
               onKeyPress={this.handleKeyPress}
               onFocus={this.handleInputFocus}
               onBlur={this.handleInputBlur}
             />
+            <ThemeToggler />
           </View>
         </View>
-        <View style={styles.main}>
+        <View style={[styles.main, { backgroundColor: theme.secondary }]}>
           <FlatList
             className="list"
             contentContainerStyle={styles.listContent}
@@ -208,8 +242,12 @@ class TwitterFeed extends Component {
             renderItem={({ item, index }) => <TweetCard {...item} />}
             onEndReached={this.fetchMoreTweets}
             onEndReachedThreshold={0.5}
-            ListHeaderComponent={() => (profile ? <ProfileCard profile={profile} /> : null)}
-            ListFooterComponent={() => (loadingProfile || loadingTweets ? <LoadingCard /> : null)}
+            ListHeaderComponent={() =>
+              profile ? <ProfileCard profile={profile} /> : null
+            }
+            ListFooterComponent={() =>
+              loadingProfile || loadingTweets ? <LoadingCard /> : null
+            }
           />
         </View>
 
@@ -217,11 +255,11 @@ class TwitterFeed extends Component {
           :global(.header-content) {
             width: 600px;
             align-self: center;
-            padding-left: 10px;
           }
 
           @media only screen and (max-width: 680px) {
             :global(.header-content) {
+              padding: 0 10px;
               width: 100%;
             }
             :global(.list > div) {
@@ -235,4 +273,45 @@ class TwitterFeed extends Component {
   }
 }
 
-export default withRouter(TwitterFeed);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  header: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 3000,
+    flex: 1,
+    justifyContent: 'center',
+    height: 53,
+    borderBottomWidth: 1
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  main: {
+    flex: 1,
+    height: '100vh'
+  },
+  listContent: {
+    alignSelf: 'center',
+    marginTop: 63,
+    width: 600
+  },
+  searchInput: {
+    paddingLeft: 15,
+    paddingTop: 6,
+    paddingBottom: 6,
+    paddingRight: 15,
+    borderRadius: 50,
+    outline: 'none',
+    borderWidth: 1
+  }
+});
+
+export default withRouter(Search);
+
+Search.contextType = ThemeContext;
