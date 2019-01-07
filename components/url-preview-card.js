@@ -34,10 +34,20 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   description: {
-    flex: 1,
     color: 'rgb(101, 119, 134)'
   }
 });
+
+const truncateText = (text, limit) => {
+  if (!text || !limit) return;
+
+  const content = text
+    .trim()
+    .split(' ')
+    .slice(0, limit);
+
+  return `${content.join(' ')}...`;
+};
 
 const UrlPreviewCard = ({ preview, expanded_url }) => {
   const { title, description, icons, logo } = preview;
@@ -53,7 +63,7 @@ const UrlPreviewCard = ({ preview, expanded_url }) => {
         </Text>
         {description && (
           <Text style={styles.description} className="description">
-            {description}
+            {truncateText(description, 14)}
           </Text>
         )}
         <Text style={styles.description}>🔗{displayUrl.hostname}</Text>

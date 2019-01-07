@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 });
 
 const SerializedTweet = ({ children, replyScreenName }) => {
-  const content = children.split(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9_]+)/);
+  const content = children.split(/(@[\w_-]+)/gi);
 
   for (let i = 1; i < content.length; i += 2) {
     if (replyScreenName) {
@@ -23,9 +23,9 @@ const SerializedTweet = ({ children, replyScreenName }) => {
         <Fragment key={i}>
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.replyingTo}>Replying to </Text>
-            <Link href={`/search?q=${content[i]}`}>
+            <Link href={`/search?q=${content[i].replace('@', '')}`}>
               <Text accessibilityRole="link" href="" style={styles.link} className="link">
-                @{content[i]}
+                {content[i]}
               </Text>
             </Link>
           </View>
@@ -36,9 +36,9 @@ const SerializedTweet = ({ children, replyScreenName }) => {
       content[i + 1] = content[i + 1].trim();
     } else {
       content[i] = (
-        <Link href={`/search?q=${content[i]}`} key={i}>
+        <Link href={`/search?q=${content[i].replace('@', '')}`} key={i}>
           <Text accessibilityRole="link" href="" style={styles.link} className="link">
-            @{content[i]}
+            {content[i]}
           </Text>
         </Link>
       );

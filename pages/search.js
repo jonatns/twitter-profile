@@ -154,7 +154,7 @@ class TwitterFeed extends Component {
   };
 
   handleDocumentClick = e => {
-    if (e.target.nodeName !== 'INPUT') {
+    if (e.target.nodeName !== 'INPUT' && this.state.inputFocused) {
       this.handleInputBlur();
     }
   };
