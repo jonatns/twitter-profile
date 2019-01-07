@@ -257,9 +257,9 @@ class Search extends Component {
             align-self: center;
           }
 
-          @media only screen and (max-width: 680px) {
+          @media only screen and (max-width: 768px) {
             :global(.header-content) {
-              padding: 0 10px;
+              padding: 0 10px !important;
               width: 100%;
             }
             :global(.list > div) {
