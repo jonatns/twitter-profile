@@ -18,7 +18,9 @@ export default class MyApp extends App {
       const cookies = ctx.req.headers.cookie;
       if (typeof cookies === 'string') {
         const cookiesJSON = jsHttpCookie.parse(cookies);
-        theme = cookiesJSON.theme;
+        if (cookiesJSON.theme && theme !== '') {
+          theme = cookiesJSON.theme;
+        }
       }
     }
 
@@ -44,7 +46,7 @@ export default class MyApp extends App {
     };
 
     this.state = {
-      theme: themes[props.theme],
+      theme: themes[props.theme] || themes.light,
       toggleTheme: this.toggleTheme,
       checked: props.theme === 'dark' ? true : false
     };
