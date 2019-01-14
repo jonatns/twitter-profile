@@ -4,13 +4,9 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import Card from './card';
 import SerializedTweet from './serialized-tweet';
 
-const ProfileCard = ({ profile }) => {
+const ProfileCard = React.memo(function ProfileCard({ profile }) {
   if (!profile) {
-    return (
-      <Card style={{ marginBottom: 10, padding: 10 }}>
-        <Text>No profile found</Text>
-      </Card>
-    );
+    return null;
   }
 
   const {
@@ -132,7 +128,7 @@ const ProfileCard = ({ profile }) => {
       )}
     </Card>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

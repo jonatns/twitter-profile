@@ -18,6 +18,7 @@ import {
 import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
 import { parse } from 'url';
+import throttle from 'lodash.throttle';
 
 import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
@@ -27,25 +28,39 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
+const BASE_URL = 'https://twitter-profile-search.now.sh';
+
 class Search extends Component {
-  static getInitialProps({ query }) {
+  static getInitialProps = async ({ query }) => {
+    const resp = await fetch(
+      `${BASE_URL}/api/get-twitter-profile.js?screen_name=${query.q}`
+    );
+
+    if (resp.status === 200) {
+      const profile = await resp.json();
+      return { q: query.q || 'jonat_ns', profile };
+    }
     return { q: query.q || 'jonat_ns' };
-  }
+  };
+
+  profileController = null;
+  tweetsController = null;
 
   state = {
     tweets: [],
-    loadingTweets: false,
+    loadingTweets: true,
     loadingProfile: false,
     lastSearch: this.props.q,
     screenName: this.props.q,
-    profile: null,
+    profile: this.props.profile || null,
     inputFocused: false,
-    smallestId: null
+    smallestId: null,
+    timelineUpdated: false
   };
 
   componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick);
-    this.fetchProfile();
+    this.fetchProfileController = new AbortController();
     this.fetchTweets();
     this.updateUrl();
   }
@@ -69,6 +84,8 @@ class Search extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleDocumentClick);
+    this.fetchProfileController = null;
+    this.fetchTweetsController = null;
   }
 
   updateUrl = () => {
@@ -76,13 +93,21 @@ class Search extends Component {
   };
 
   fetchProfile = async () => {
+    if (this.fetchProfileController) {
+      this.fetchProfileController.abort();
+    }
+    this.fetchProfileController = new AbortController();
+
     const { screenName } = this.state;
 
     this.setState({ loadingProfile: true });
 
     try {
       const resp = await fetch(
-        `https://twitter-profile-search.now.sh/api/get-twitter-profile.js?screen_name=${screenName}`
+        `${BASE_URL}/api/get-twitter-profile.js?screen_name=${screenName}`,
+        {
+          signal: this.fetchProfileController.signal
+        }
       );
 
       if (resp.status === 200) {
@@ -92,31 +117,54 @@ class Search extends Component {
         throw new Error('Failed to fetch profile');
       }
     } catch (err) {
-      console.log(err);
-      this.setState({ profile: null, loadingProfile: false });
+      if (err.name !== 'AbortError') {
+        console.log(err);
+        this.setState({ profile: null, loadingProfile: false });
+      }
     }
   };
 
   fetchTweets = async () => {
-    const { lastSearch, screenName, smallestId, tweets } = this.state;
+    if (this.fetchTweetsController) {
+      this.fetchTweetsController.abort();
+    }
+    this.fetchTweetsController = new AbortController();
+
+    const {
+      lastSearch,
+      screenName,
+      smallestId,
+      tweets,
+      timelineUpdated
+    } = this.state;
+
+    if (timelineUpdated) {
+      return;
+    }
 
     this.setState({ loadingTweets: true, lastSearch: screenName });
 
     try {
       const resp = await fetch(
-        `https://twitter-profile-search.now.sh/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`
+        `${BASE_URL}/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`,
+        {
+          signal: this.fetchTweetsController.signal
+        }
       );
 
       if (resp.status === 200) {
         const data = await resp.json();
         const updatedState = { loadingTweets: false };
 
-        if (data && data.length > 0) {
-          updatedState.smallestId = bigInt(data[data.length - 1].id_str)
-            .minus(1)
-            .toString();
-
-          updatedState.tweets = [...tweets, ...data];
+        if (data) {
+          if (data.length > 0) {
+            updatedState.smallestId = bigInt(data[data.length - 1].id_str)
+              .minus(1)
+              .toString();
+            updatedState.tweets = [...tweets, ...data];
+          } else {
+            updatedState.timelineUpdated = true;
+          }
         }
 
         this.setState(updatedState);
@@ -124,13 +172,15 @@ class Search extends Component {
         throw new Error('Failed to fetch tweets');
       }
     } catch (err) {
-      console.log(err);
-      this.setState({ smallestId: null, tweets: [], loadingTweets: false });
+      if (err.name !== 'AbortError') {
+        console.log(err);
+        this.setState({ smallestId: null, tweets: [], loadingTweets: false });
+      }
     }
   };
 
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
-    const paddingToBottom = 200;
+    const paddingToBottom = 400;
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
@@ -169,16 +219,15 @@ class Search extends Component {
   };
 
   handleScrollEvent = ({ nativeEvent }) => {
-    const { loadingTweets } = this.state;
-    if (this.isCloseToBottom(nativeEvent) && !loadingTweets) {
-      this.fetchTweets();
+    const { timelineUpdated } = this.state;
+
+    if (!this.isCloseToBottom(nativeEvent) && timelineUpdated) {
+      this.setState({ timelineUpdated: false });
     }
   };
 
-  fetchMoreTweets = () => {
-    if (!this.state.loadingTweets) {
-      this.fetchTweets();
-    }
+  renderItem = ({ item, index }) => {
+    return <TweetCard {...item} />;
   };
 
   render() {
@@ -239,15 +288,14 @@ class Search extends Component {
             contentContainerStyle={styles.listContent}
             data={tweets}
             keyExtractor={item => item.id + ''}
-            renderItem={({ item, index }) => <TweetCard {...item} />}
-            onEndReached={this.fetchMoreTweets}
-            onEndReachedThreshold={0.5}
-            ListHeaderComponent={() =>
-              profile ? <ProfileCard profile={profile} /> : null
-            }
-            ListFooterComponent={() =>
-              loadingProfile || loadingTweets ? <LoadingCard /> : null
-            }
+            renderItem={this.renderItem}
+            onEndReached={() => this.fetchTweets()}
+            onScroll={throttle(this.handleScrollEvent, 1500)}
+            initialNumToRender={20}
+            maxToRenderPerBatch={2}
+            onEndReachedThreshold={0.8}
+            ListHeaderComponent={<ProfileCard profile={profile} />}
+            ListFooterComponent={<LoadingCard loading={loadingTweets} />}
           />
         </View>
 
@@ -285,12 +333,14 @@ const styles = StyleSheet.create({
     zIndex: 3000,
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     height: 53,
     borderBottomWidth: 1
   },
   headerContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   main: {
     flex: 1,

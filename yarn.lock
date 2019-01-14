@@ -809,6 +809,13 @@
     widest-line "^2.0.1"
     wrap-ansi "^4.0.0"
 
+"@trainline/react-skeletor@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@trainline/react-skeletor/-/react-skeletor-1.0.2.tgz#a5cab1482ae59b187cb4e60de905cdb552b15b06"
+  integrity sha1-pcqxSCrlmxh8tOYN6QXNtVKxWwY=
+  dependencies:
+    prop-types "^15.5.10"
+
 "@webassemblyjs/ast@1.7.8":
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.7.8.tgz#f31f480debeef957f01b623f27eabc695fa4fe8f"
@@ -3400,6 +3407,11 @@ lodash.templatesettings@^4.0.0:
   dependencies:
     lodash._reinterpolate "~3.0.0"
 
+lodash.throttle@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
+  integrity sha1-wj6RtxAkKscMN/HhzaknTMOb8vQ=
+
 lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
@@ -4328,7 +4340,7 @@ prop-types-exact@1.2.0:
     object.assign "^4.1.0"
     reflect.ownkeys "^0.2.0"
 
-prop-types@15.6.2, prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@15.6.2, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   integrity sha512-3pboPvLiWD7dkI3qf3KbUe6hKFKa52w+AE0VCqECtf+QHAKgOL37tTaNCnuX1nAAQ4ZhyP+kYVKf8rLmJ/feDQ==
@@ -4464,11 +4476,6 @@ react-art@^16.7.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.12.0"
-
-react-content-loader@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/react-content-loader/-/react-content-loader-3.4.1.tgz#8eb273c630ffb36cb92f4383be811828eb8e1e66"
-  integrity sha512-lco6voFNwAGFBhVtczjyBuUKcBV1m8Ce3GNNEHm6maOCTIqGQePnomkwkfgcnpT9izZdAbpgeE8O4J/X+OG3JA==
 
 react-dom@^16.7.0-alpha:
   version "16.7.0"

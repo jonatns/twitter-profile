@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -10,14 +11,14 @@ import Card from './card';
 import UrlPreviewCard from './url-preview-card';
 import SerializedTweet from './serialized-tweet';
 
-const TweetCard = ({
+const TweetCard = React.memo(function TweetCard({
   id,
   user,
   in_reply_to_status_id,
   in_reply_to_screen_name,
   text,
   entities
-}) => {
+}) {
   const userImage = user.profile_image_url_https.replace('_normal', '');
   const cleanedText = text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim();
 
@@ -74,7 +75,7 @@ const TweetCard = ({
       )}
     </Card>
   );
-};
+});
 
 export default TweetCard;
 

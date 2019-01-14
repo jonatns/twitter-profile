@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 import Card from './card';
@@ -9,6 +9,16 @@ const styles = StyleSheet.create({
   }
 });
 
-export default () => {
-  return <Card style={styles.container}>{<ActivityIndicator animating size={26} />}</Card>;
+const LoadingCard = ({ loading }) => {
+  if (!loading) {
+    return null;
+  }
+
+  return (
+    <Card style={styles.container}>
+      {<ActivityIndicator animating size={26} />}
+    </Card>
+  );
 };
+
+export default LoadingCard;

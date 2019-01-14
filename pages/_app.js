@@ -45,8 +45,6 @@ export default class MyApp extends App {
       );
     };
 
-    console.log('theme', props.theme || 'light');
-
     this.state = {
       theme: themes[props.theme] || themes.light,
       toggleTheme: this.toggleTheme,
