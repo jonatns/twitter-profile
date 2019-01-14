@@ -5,7 +5,7 @@ const twitterAPI = require('./utils/twitter-api')();
 const fetchLinkPreview = url => {
   return fetch(
     `https://page.rest/fetch?token=${process.env.PAGE_REST_TOKEN}&url=${url}`
-  );
+  ).then(response => response.json());
 };
 
 module.exports = async (req, res) => {
@@ -50,10 +50,7 @@ module.exports = async (req, res) => {
         }
       }
 
-      const responses = await Promise.all(promises);
-      const previews = await Promise.all(
-        responses.map(async resp => await resp.json())
-      );
+      const previews = await Promise.all(promises);
 
       for (let index = 0; index < indexes.length; index++) {
         data[indexes[index]].entities.urls[0].preview = previews[index];
