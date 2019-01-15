@@ -18,8 +18,6 @@ const SerializedTweet = React.memo(function SerializedTweet({
 }) {
   const content = children.split(/(@[\w_-]+)/gi);
 
-  console.log('rendered');
-
   for (let i = 1; i < content.length; i += 2) {
     if (replyScreenName) {
       content[i] = (

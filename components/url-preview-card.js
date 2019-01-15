@@ -1,4 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, Linking } from 'react-native';
+import fetch from 'isomorphic-unfetch';
+
+const BASE_URL =
+  process.env.NODE_ENV !== 'production' ? 'http://localhost:5000' : '';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,15 +51,55 @@ const truncateText = (text, limit) => {
   return `${content.join(' ')}...`;
 };
 
-const UrlPreviewCard = ({ preview, expanded_url, theme }) => {
+function UrlPreviewCard({ url, theme }) {
+  const [preview, setPreview] = useState(null);
+  const fetchController = new AbortController();
+
+  const fetchData = async () => {
+    try {
+      const resp = await fetch(
+        `${BASE_URL}/api/get-url-preview.js?url=${url}`,
+        {
+          signal: fetchController.signal
+        }
+      );
+      const data = await resp.json();
+      setPreview(data);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.log(err);
+      }
+    }
+  };
+
+  useEffect(
+    () => {
+      fetchData();
+
+      return () => {
+        fetchController.abort();
+      };
+    },
+    [url]
+  );
+
+  if (!preview) {
+    return (
+      <View
+        style={[styles.container, { borderColor: theme.border }]}
+        className="container"
+      />
+    );
+  }
+
   const { title, description, icons, logo } = preview;
   const imageSource = logo || (icons && icons.length > 0 && icons[0]);
-  const displayUrl = new URL(expanded_url);
+  const displayUrl = new URL(url);
 
   return (
     <View
       accessibilityRole="link"
-      href={expanded_url}
+      href={url}
       target="_blank"
       style={[styles.container, { borderColor: theme.border }]}
       className="container"
@@ -100,6 +145,6 @@ const UrlPreviewCard = ({ preview, expanded_url, theme }) => {
       `}</style>
     </View>
   );
-};
+}
 
 export default UrlPreviewCard;

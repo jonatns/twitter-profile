@@ -28,7 +28,8 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
-const BASE_URL = 'https://twitter-profile-search.now.sh';
+const BASE_URL =
+  process.env.NODE_ENV !== 'production' ? 'http://localhost:5000' : '';
 
 class Search extends Component {
   static getInitialProps = async ({ query }) => {
@@ -226,10 +227,6 @@ class Search extends Component {
     }
   };
 
-  renderItem = ({ item, index }) => {
-    return <TweetCard {...item} />;
-  };
-
   render() {
     const {
       profile,
@@ -288,7 +285,7 @@ class Search extends Component {
             contentContainerStyle={styles.listContent}
             data={tweets}
             keyExtractor={item => item.id + ''}
-            renderItem={this.renderItem}
+            renderItem={({ item }) => <TweetCard {...item} />}
             onEndReached={() => this.fetchTweets()}
             onScroll={throttle(this.handleScrollEvent, 1500)}
             initialNumToRender={20}

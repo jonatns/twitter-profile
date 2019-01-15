@@ -1,3 +1,4 @@
+require('now-env');
 const { parse } = require('url');
 const twitterAPI = require('./utils/twitter-api')();
 
@@ -5,7 +6,9 @@ module.exports = async (req, res) => {
   const { query } = parse(req.url, true);
   const { screen_name } = query;
 
-  res.setHeader('Content-Type', `application/json`);
+  if (process.env.NODE_ENV === 'development') {
+    res.setHeader('Access-Control-Allow-Origin', `*`);
+  }
 
   twitterAPI.getCustomApiCall(
     '/users/show.json',

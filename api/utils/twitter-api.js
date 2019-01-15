@@ -1,4 +1,3 @@
-require('now-env');
 const Twitter = require('twitter-node-client').Twitter;
 
 module.exports = function() {

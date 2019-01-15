@@ -60,9 +60,14 @@ const TweetCard = React.memo(function TweetCard({
                 />
               </View>
             )}
-            {entities.urls && entities.urls.length > 0 && (
-              <UrlPreviewCard theme={theme} {...entities.urls[0]} />
-            )}
+            {entities.urls &&
+            entities.urls.length > 0 &&
+            entities.urls[0].hasPreview ? (
+              <UrlPreviewCard
+                theme={theme}
+                url={entities.urls[0].expanded_url}
+              />
+            ) : null}
           </View>
           <style jsx>{`
             @media only screen and (max-width: 680px) {
