@@ -28,11 +28,10 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
-const BASE_URL =
-  process.env.NODE_ENV !== 'production' ? 'http://localhost:5000' : '';
+const BASE_URL = process.env.BASE_URL;
 
 class Search extends Component {
-  static getInitialProps = async ({ query }) => {
+  static getInitialProps = async ({ query, req }) => {
     const resp = await fetch(
       `${BASE_URL}/api/get-twitter-profile.js?screen_name=${query.q}`
     );

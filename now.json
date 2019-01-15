@@ -20,6 +20,7 @@
     }
   ],
   "env": {
+    "BASE_URL": "https://twitter-profile-search.now.sh",
     "TWITTER_CONSUMER_KEY": "@twitter-consumer-key",
     "TWITTER_CONSUMER_SECRET": "@twitter-consumer-secret",
     "TWITTER_ACCESS_TOKEN": "@twitter-access-token",
