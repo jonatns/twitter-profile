@@ -28,7 +28,7 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = 'https://twitter-profile-search.now.sh';
 
 class Search extends Component {
   static getInitialProps = async ({ query, req }) => {

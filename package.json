@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "BASE_URL=https://twitter-profile-search.now.sh next",
+    "dev": "next",
     "build": "next build",
     "start": "next start",
     "lambdas": "NODE_ENV=development now-we-test serve --port 5000"
