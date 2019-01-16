@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState, useEffect, useContext } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { withRouter } from 'next/router';
@@ -27,35 +27,19 @@ import LoadingCard from '../components/loading-card';
 import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
+import useTimeline from '../components/use-timeline';
+import useProfile from '../components/use-profile';
 
 const BASE_URL = 'https://twitter-profile-search.now.sh';
 
-class Search extends Component {
-  static getInitialProps = async ({ query, req }) => {
-    const resp = await fetch(
-      `${BASE_URL}/api/get-twitter-profile.js?screen_name=${query.q}`
-    );
-
-    if (resp.status === 200) {
-      const profile = await resp.json();
-      return { q: query.q || 'jonat_ns', profile };
-    }
-    return { q: query.q || 'jonat_ns' };
-  };
-
+class OldSearch extends Component {
   profileController = null;
   tweetsController = null;
 
   state = {
-    tweets: [],
-    loadingTweets: true,
-    loadingProfile: false,
     lastSearch: this.props.q,
     screenName: this.props.q,
-    profile: this.props.profile || null,
-    inputFocused: false,
-    smallestId: null,
-    timelineUpdated: false
+    profile: this.props.profile || null
   };
 
   componentDidMount() {
@@ -317,6 +301,136 @@ class Search extends Component {
   }
 }
 
+function Search({ router }) {
+  const SCREEN_NAME = 'jonat_ns';
+  const { theme, toggleTheme, checked } = useContext(ThemeContext);
+  const [screenName, setScreenName] = useState(SCREEN_NAME);
+  const [lastScreenName, setLastScreenName] = useState(SCREEN_NAME);
+  const [inputFocused, setInputFocused] = useState(false);
+
+  const { profile, setProfile } = useProfile(lastScreenName);
+  const { timeline, setTimeline, fetchingTimeline } = useTimeline(
+    lastScreenName
+  );
+
+  useEffect(
+    () => {
+      updateUrl();
+    },
+    [screenName]
+  );
+
+  function updateUrl() {
+    router.push(`/search?q=${screenName}`);
+  }
+
+  function handleKeyPress(e) {
+    if (
+      e.key === 'Enter' &&
+      screenName !== '' &&
+      lastScreenName !== screenName
+    ) {
+      updateUrl();
+      setTimeline({ timeline: [], smallestId: null });
+      setProfile(null);
+      setLastScreenName(screenName);
+    }
+  }
+
+  return (
+    <View style={styles.container}>
+      <Head>
+        <title>Twitter Profile Search</title>
+      </Head>
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: theme.primary,
+            borderBottomColor: theme.headerBorder
+          }
+        ]}
+      >
+        <View style={styles.headerContent} className="header-content">
+          <TextInput
+            placeholder="Search user by @"
+            placeholderTextColor={theme.subText}
+            value={screenName}
+            onChange={e => setScreenName(e.target.value)}
+            style={[
+              styles.searchInput,
+              {
+                color: theme.text,
+                backgroundColor: theme.secondary,
+                borderColor: theme.secondary
+              },
+              inputFocused && {
+                color: '#1EA1F2',
+                borderColor: '#1EA1F2',
+                backgroundColor: theme.primary
+              }
+            ]}
+            onKeyPress={handleKeyPress}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+          />
+          <ThemeToggler
+            theme={theme}
+            toggleTheme={toggleTheme}
+            checked={checked}
+          />
+        </View>
+      </View>
+      <View style={[styles.main, { backgroundColor: theme.secondary }]}>
+        <FlatList
+          className="list"
+          contentContainerStyle={styles.listContent}
+          data={timeline}
+          keyExtractor={item => item.id + ''}
+          renderItem={({ item }) => <TweetCard {...item} />}
+          initialNumToRender={20}
+          maxToRenderPerBatch={2}
+          onEndReachedThreshold={0.8}
+          ListHeaderComponent={<ProfileCard profile={profile} />}
+          ListFooterComponent={<LoadingCard loading={fetchingTimeline} />}
+        />
+      </View>
+
+      <style jsx>{`
+        :global(.header-content) {
+          width: 600px;
+          align-self: center;
+        }
+
+        @media only screen and (max-width: 768px) {
+          :global(.header-content) {
+            padding: 0 10px !important;
+            width: 100%;
+          }
+          :global(.list > div) {
+            width: 100%;
+            margin-top: 53px;
+          }
+        }
+      `}</style>
+    </View>
+  );
+}
+
+/*
+Search.getInitialProps = async ({ query, req }) => {
+  const resp = await fetch(
+    `${BASE_URL}/api/get-twitter-profile.js?screen_name=${query.q}`
+  );
+
+  if (resp.status === 200) {
+    const profile = await resp.json();
+    return { q: query.q || 'jonat_ns', profile };
+  }
+  return { q: query.q || 'jonat_ns' };
+};
+*/
+
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -359,5 +473,3 @@ const styles = StyleSheet.create({
 });
 
 export default withRouter(Search);
-
-Search.contextType = ThemeContext;
