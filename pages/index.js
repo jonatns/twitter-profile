@@ -1,6 +1,16 @@
-import { withRouter } from 'next/router';
-
-export default withRouter(({ router }) => {
-  router.push('/search');
+const Index = () => {
   return null;
-});
+};
+
+Index.getInitialProps = ({ res }) => {
+  if (res) {
+    res.writeHead(301, {
+      Location: '/search',
+    });
+    res.end();
+  }
+
+  return {};
+};
+
+export default Index;
