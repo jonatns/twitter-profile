@@ -12,7 +12,7 @@
   "author": "Jonathan Navarrete <jonatns@gmail.com>",
   "license": "ISC",
   "engines": {
-    "node": "8.x"
+    "node": "10.x"
   },
   "dependencies": {
     "@trainline/react-skeletor": "^1.0.2",
