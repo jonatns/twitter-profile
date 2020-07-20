@@ -11,6 +11,9 @@
   },
   "author": "Jonathan Navarrete <jonatns@gmail.com>",
   "license": "ISC",
+  "engines": {
+    "node": "12.x"
+  },
   "dependencies": {
     "@trainline/react-skeletor": "^1.0.2",
     "big-integer": "^1.6.28",
