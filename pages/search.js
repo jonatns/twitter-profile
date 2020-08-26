@@ -12,10 +12,9 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
-  TextInput
+  TextInput,
 } from 'react-native';
 
-import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
 import { parse } from 'url';
 import throttle from 'lodash.throttle';
@@ -28,12 +27,15 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
-const BASE_URL = 'https://twitter-profile-search.now.sh';
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://twitter-profile-search.now.sh';
 
 class Search extends Component {
   static getInitialProps = async ({ query, req }) => {
     const resp = await fetch(
-      `${BASE_URL}/api/get-twitter-profile.js?screen_name=${query.q}`
+      `${BASE_URL}/api/get-twitter-profile?screen_name=${query.q}`
     );
 
     if (resp.status === 200) {
@@ -55,7 +57,7 @@ class Search extends Component {
     profile: this.props.profile || null,
     inputFocused: false,
     smallestId: null,
-    timelineUpdated: false
+    timelineUpdated: false,
   };
 
   componentDidMount() {
@@ -72,7 +74,7 @@ class Search extends Component {
           screenName: this.props.router.query.q,
           profile: null,
           tweets: [],
-          smallestId: null
+          smallestId: null,
         },
         () => {
           this.fetchProfile();
@@ -104,9 +106,9 @@ class Search extends Component {
 
     try {
       const resp = await fetch(
-        `${BASE_URL}/api/get-twitter-profile.js?screen_name=${screenName}`,
+        `/api/get-twitter-profile?screen_name=${screenName}`,
         {
-          signal: this.fetchProfileController.signal
+          signal: this.fetchProfileController.signal,
         }
       );
 
@@ -135,7 +137,7 @@ class Search extends Component {
       screenName,
       smallestId,
       tweets,
-      timelineUpdated
+      timelineUpdated,
     } = this.state;
 
     if (timelineUpdated) {
@@ -146,9 +148,9 @@ class Search extends Component {
 
     try {
       const resp = await fetch(
-        `${BASE_URL}/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`,
+        `/api/get-twitter-timeline?max_id=${smallestId}&screen_name=${screenName}`,
         {
-          signal: this.fetchTweetsController.signal
+          signal: this.fetchTweetsController.signal,
         }
       );
 
@@ -187,11 +189,11 @@ class Search extends Component {
     );
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ screenName: e.target.value });
   };
 
-  handleKeyPress = e => {
+  handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       const { lastSearch, screenName } = this.state;
       if (lastSearch !== screenName && screenName !== '') {
@@ -212,7 +214,7 @@ class Search extends Component {
     this.setState({ inputFocused: true });
   };
 
-  handleDocumentClick = e => {
+  handleDocumentClick = (e) => {
     if (e.target.nodeName !== 'INPUT' && this.state.inputFocused) {
       this.handleInputBlur();
     }
@@ -233,7 +235,7 @@ class Search extends Component {
       tweets,
       loadingTweets,
       screenName,
-      inputFocused
+      inputFocused,
     } = this.state;
     const { theme } = this.context;
 
@@ -247,8 +249,8 @@ class Search extends Component {
             styles.header,
             {
               backgroundColor: theme.primary,
-              borderBottomColor: theme.headerBorder
-            }
+              borderBottomColor: theme.headerBorder,
+            },
           ]}
         >
           <View style={styles.headerContent} className="header-content">
@@ -263,13 +265,13 @@ class Search extends Component {
                 {
                   color: theme.text,
                   backgroundColor: theme.secondary,
-                  borderColor: theme.secondary
+                  borderColor: theme.secondary,
                 },
                 inputFocused && {
                   color: '#1EA1F2',
                   borderColor: '#1EA1F2',
-                  backgroundColor: theme.primary
-                }
+                  backgroundColor: theme.primary,
+                },
               ]}
               onKeyPress={this.handleKeyPress}
               onFocus={this.handleInputFocus}
@@ -283,7 +285,7 @@ class Search extends Component {
             className="list"
             contentContainerStyle={styles.listContent}
             data={tweets}
-            keyExtractor={item => item.id + ''}
+            keyExtractor={(item) => item.id + ''}
             renderItem={({ item }) => <TweetCard {...item} />}
             onEndReached={() => this.fetchTweets()}
             onScroll={throttle(this.handleScrollEvent, 1500)}
@@ -319,7 +321,7 @@ class Search extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   header: {
     position: 'fixed',
@@ -331,21 +333,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 53,
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   main: {
     flex: 1,
-    height: '100vh'
+    height: '100vh',
   },
   listContent: {
     alignSelf: 'center',
     marginTop: 63,
-    width: 600
+    width: 600,
   },
   searchInput: {
     paddingLeft: 15,
@@ -354,8 +356,8 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     borderRadius: 50,
     outline: 'none',
-    borderWidth: 1
-  }
+    borderWidth: 1,
+  },
 });
 
 export default withRouter(Search);

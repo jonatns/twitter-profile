@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { ThemeContext } from './theme-context';
 
-export default ({ children, style }) => {
+const Card = ({ children, style }) => {
   return (
     <ThemeContext.Consumer>
       {({ theme }) => (
@@ -13,8 +13,8 @@ export default ({ children, style }) => {
             style,
             {
               backgroundColor: theme.primary,
-              borderBottomColor: theme.border
-            }
+              borderBottomColor: theme.border,
+            },
           ]}
         >
           {typeof children === 'function' ? children({ theme }) : children}
@@ -27,8 +27,10 @@ export default ({ children, style }) => {
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
-    padding: 10,
+    padding: 15,
     paddingBottom: 20,
-    minHeight: 60
-  }
+    minHeight: 60,
+  },
 });
+
+export default Card;

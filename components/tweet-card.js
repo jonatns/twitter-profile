@@ -4,7 +4,7 @@ import {
   View,
   Text,
   Image,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import Card from './card';
@@ -17,7 +17,7 @@ const TweetCard = React.memo(function TweetCard({
   in_reply_to_status_id,
   in_reply_to_screen_name,
   text,
-  entities
+  entities,
 }) {
   const userImage = user.profile_image_url_https.replace('_normal', '');
   const cleanedText = text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim();
@@ -50,7 +50,7 @@ const TweetCard = React.memo(function TweetCard({
               <View
                 style={[
                   styles.tweetMediaWrapper,
-                  { borderColor: theme.border }
+                  { borderColor: theme.border },
                 ]}
                 className="tweet-media-wrapper"
               >
@@ -87,30 +87,30 @@ export default TweetCard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   content: {
     flex: 1,
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   contentHeader: {
     flexDirection: 'row',
-    marginBottom: 5
+    marginBottom: 5,
   },
   userName: {
     fontWeight: 'bold',
-    marginRight: 4
+    marginRight: 4,
   },
   userScreenName: {
-    color: 'rgb(101, 119, 134)'
+    color: 'rgb(101, 119, 134)',
   },
   userImage: {
     width: 49,
     height: 49,
-    borderRadius: 49 / 2
+    borderRadius: 49 / 2,
   },
   contentText: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   tweetMediaWrapper: {
     flex: 1,
@@ -119,10 +119,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderColor: 'rgb(230, 236, 240)',
     borderWidth: 1,
-    marginTop: 10
+    marginTop: 10,
   },
   tweetMediaImage: {
     flex: 1,
-    borderRadius: 15
-  }
+    borderRadius: 15,
+  },
 });

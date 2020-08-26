@@ -1,5 +1,5 @@
 import React from 'react';
-import App, { Container } from 'next/app';
+import App from 'next/app';
 import jsHttpCookie from 'cookie';
 import jsCookie from 'js-cookie';
 
@@ -32,9 +32,9 @@ export default class MyApp extends App {
 
     this.toggleTheme = () => {
       this.setState(
-        state => ({
+        (state) => ({
           theme: state.checked ? themes.light : themes.dark,
-          checked: !state.checked
+          checked: !state.checked,
         }),
         () => {
           jsCookie.set(
@@ -48,7 +48,7 @@ export default class MyApp extends App {
     this.state = {
       theme: themes[props.theme] || themes.light,
       toggleTheme: this.toggleTheme,
-      checked: props.theme === 'dark' ? true : false
+      checked: props.theme === 'dark' ? true : false,
     };
   }
 
@@ -56,11 +56,9 @@ export default class MyApp extends App {
     const { Component, pageProps } = this.props;
 
     return (
-      <Container>
-        <ThemeContext.Provider value={this.state}>
-          <Component {...pageProps} />
-        </ThemeContext.Provider>
-      </Container>
+      <ThemeContext.Provider value={this.state}>
+        <Component {...pageProps} />
+      </ThemeContext.Provider>
     );
   }
 }
