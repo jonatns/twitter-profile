@@ -1,26 +1,11 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { withRouter } from 'next/router';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Animated,
-  TouchableWithoutFeedback,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  TextInput
-} from 'react-native';
+import { StyleSheet, View, FlatList, TextInput } from 'react-native';
 
-import fetch from 'isomorphic-unfetch';
 import bigInt from 'big-integer';
-import { parse } from 'url';
 import throttle from 'lodash.throttle';
 
-import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
 import TweetCard from '../components/tweet-card';
 import LoadingCard from '../components/loading-card';
@@ -28,21 +13,7 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
-const BASE_URL = 'https://twitter-profile-search.now.sh';
-
 class Search extends Component {
-  static getInitialProps = async ({ query, req }) => {
-    const resp = await fetch(
-      `${BASE_URL}/api/get-twitter-profile.js?screen_name=${query.q}`
-    );
-
-    if (resp.status === 200) {
-      const profile = await resp.json();
-      return { q: query.q || 'jonat_ns', profile };
-    }
-    return { q: query.q || 'jonat_ns' };
-  };
-
   profileController = null;
   tweetsController = null;
 
@@ -50,17 +21,17 @@ class Search extends Component {
     tweets: [],
     loadingTweets: true,
     loadingProfile: false,
-    lastSearch: this.props.q,
-    screenName: this.props.q,
+    lastSearch: this.props.router.query.q || 'jonat_ns',
+    screenName: this.props.router.query.q || 'jonat_ns',
     profile: this.props.profile || null,
     inputFocused: false,
     smallestId: null,
-    timelineUpdated: false
+    timelineUpdated: false,
   };
 
   componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick);
-    this.fetchProfileController = new AbortController();
+    this.fetchProfile();
     this.fetchTweets();
     this.updateUrl();
   }
@@ -72,7 +43,7 @@ class Search extends Component {
           screenName: this.props.router.query.q,
           profile: null,
           tweets: [],
-          smallestId: null
+          smallestId: null,
         },
         () => {
           this.fetchProfile();
@@ -104,9 +75,9 @@ class Search extends Component {
 
     try {
       const resp = await fetch(
-        `${BASE_URL}/api/get-twitter-profile.js?screen_name=${screenName}`,
+        `/api/get-twitter-profile?screen_name=${screenName}`,
         {
-          signal: this.fetchProfileController.signal
+          signal: this.fetchProfileController.signal,
         }
       );
 
@@ -130,13 +101,7 @@ class Search extends Component {
     }
     this.fetchTweetsController = new AbortController();
 
-    const {
-      lastSearch,
-      screenName,
-      smallestId,
-      tweets,
-      timelineUpdated
-    } = this.state;
+    const { screenName, smallestId, tweets, timelineUpdated } = this.state;
 
     if (timelineUpdated) {
       return;
@@ -146,9 +111,9 @@ class Search extends Component {
 
     try {
       const resp = await fetch(
-        `${BASE_URL}/api/get-twitter-timeline.js?max_id=${smallestId}&screen_name=${screenName}`,
+        `/api/get-twitter-timeline?max_id=${smallestId}&screen_name=${screenName}`,
         {
-          signal: this.fetchTweetsController.signal
+          signal: this.fetchTweetsController.signal,
         }
       );
 
@@ -187,11 +152,11 @@ class Search extends Component {
     );
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ screenName: e.target.value });
   };
 
-  handleKeyPress = e => {
+  handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       const { lastSearch, screenName } = this.state;
       if (lastSearch !== screenName && screenName !== '') {
@@ -212,7 +177,7 @@ class Search extends Component {
     this.setState({ inputFocused: true });
   };
 
-  handleDocumentClick = e => {
+  handleDocumentClick = (e) => {
     if (e.target.nodeName !== 'INPUT' && this.state.inputFocused) {
       this.handleInputBlur();
     }
@@ -229,11 +194,10 @@ class Search extends Component {
   render() {
     const {
       profile,
-      loadingProfile,
       tweets,
       loadingTweets,
       screenName,
-      inputFocused
+      inputFocused,
     } = this.state;
     const { theme } = this.context;
 
@@ -247,13 +211,12 @@ class Search extends Component {
             styles.header,
             {
               backgroundColor: theme.primary,
-              borderBottomColor: theme.headerBorder
-            }
+              borderBottomColor: theme.headerBorder,
+            },
           ]}
         >
           <View style={styles.headerContent} className="header-content">
             <TextInput
-              ref="searchInput"
               placeholder="Search user by @"
               placeholderTextColor={theme.subText}
               value={screenName}
@@ -263,13 +226,13 @@ class Search extends Component {
                 {
                   color: theme.text,
                   backgroundColor: theme.secondary,
-                  borderColor: theme.secondary
+                  borderColor: theme.secondary,
                 },
                 inputFocused && {
                   color: '#1EA1F2',
                   borderColor: '#1EA1F2',
-                  backgroundColor: theme.primary
-                }
+                  backgroundColor: theme.primary,
+                },
               ]}
               onKeyPress={this.handleKeyPress}
               onFocus={this.handleInputFocus}
@@ -283,7 +246,7 @@ class Search extends Component {
             className="list"
             contentContainerStyle={styles.listContent}
             data={tweets}
-            keyExtractor={item => item.id + ''}
+            keyExtractor={(item) => item.id + ''}
             renderItem={({ item }) => <TweetCard {...item} />}
             onEndReached={() => this.fetchTweets()}
             onScroll={throttle(this.handleScrollEvent, 1500)}
@@ -294,24 +257,6 @@ class Search extends Component {
             ListFooterComponent={<LoadingCard loading={loadingTweets} />}
           />
         </View>
-
-        <style jsx>{`
-          :global(.header-content) {
-            width: 600px;
-            align-self: center;
-          }
-
-          @media only screen and (max-width: 768px) {
-            :global(.header-content) {
-              padding: 0 10px !important;
-              width: 100%;
-            }
-            :global(.list > div) {
-              width: 100%;
-              margin-top: 53px;
-            }
-          }
-        `}</style>
       </View>
     );
   }
@@ -319,7 +264,7 @@ class Search extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   header: {
     position: 'fixed',
@@ -331,21 +276,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 53,
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '100%',
+    maxWidth: 600,
   },
   main: {
     flex: 1,
-    height: '100vh'
+    height: '100vh',
   },
   listContent: {
     alignSelf: 'center',
     marginTop: 63,
-    width: 600
+    width: '100%',
+    maxWidth: 600,
   },
   searchInput: {
     paddingLeft: 15,
@@ -353,9 +303,8 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     paddingRight: 15,
     borderRadius: 50,
-    outline: 'none',
-    borderWidth: 1
-  }
+    borderWidth: 1,
+  },
 });
 
 export default withRouter(Search);
