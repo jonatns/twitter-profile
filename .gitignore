@@ -4,3 +4,4 @@ now-secrets.json
 .next
 package-lock.json
 yarn-error.log
+.vercel

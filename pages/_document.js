@@ -1,5 +1,5 @@
 import React from 'react';
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import flush from 'styled-jsx/server';
 import { AppRegistry } from 'react-native';
 
@@ -24,7 +24,7 @@ export default class MyDocument extends Document {
         key="_next-styles"
         dangerouslySetInnerHTML={{ __html: normalizeNextElements }}
       />,
-      getStyleElement({ key: '_react-native-web-styles' })
+      getStyleElement({ key: '_react-native-web-styles' }),
     ];
     return { ...page, styles };
   }
@@ -33,14 +33,8 @@ export default class MyDocument extends Document {
     const styles = flush();
 
     return (
-      <html>
-        <Head>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
-          {styles}
-        </Head>
+      <Html>
+        <Head>{styles}</Head>
         <body>
           <Main />
           <NextScript />
@@ -49,6 +43,7 @@ export default class MyDocument extends Document {
               transition: all 0.15s linear;
             }
             :global(input) {
+              outline: none !important;
               transition: background-color 0.15s linear, color 0.15s linear;
             }
             :global(html) {
@@ -64,7 +59,7 @@ export default class MyDocument extends Document {
             }
           `}</style>
         </body>
-      </html>
+      </Html>
     );
   }
 }

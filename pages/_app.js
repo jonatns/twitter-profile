@@ -5,60 +5,50 @@ import jsCookie from 'js-cookie';
 
 import { ThemeContext, themes } from '../components/theme-context';
 
-export default class MyApp extends App {
-  static async getInitialProps({ Component, router, ctx, req }) {
-    let pageProps = {};
-    let theme = 'light';
+const MyApp = ({ initialTheme, Component, pageProps }) => {
+  const [theme, setTheme] = React.useState(
+    themes[initialTheme] || themes.light
+  );
+  const [checked, setChecked] = React.useState(
+    initialTheme === 'dark' ? true : false
+  );
 
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
+  const toggleTheme = () => {
+    const newTheme = checked ? 'light' : 'dark';
+    setTheme(themes[newTheme]);
+    setChecked(!checked);
+    jsCookie.set('theme', newTheme);
+  };
 
-    if (ctx.req && ctx.req.headers) {
-      const cookies = ctx.req.headers.cookie;
-      if (typeof cookies === 'string') {
-        const cookiesJSON = jsHttpCookie.parse(cookies);
-        if (cookiesJSON.theme && theme !== '') {
-          theme = cookiesJSON.theme;
-        }
+  return (
+    <ThemeContext.Provider
+      value={{
+        theme,
+        toggleTheme,
+        checked,
+      }}
+    >
+      <Component {...pageProps} />
+    </ThemeContext.Provider>
+  );
+};
+
+MyApp.getInitialProps = async (appContext) => {
+  let initialTheme = 'light';
+
+  const appProps = await App.getInitialProps(appContext);
+
+  if (appContext.ctx.req && appContext.ctx.req.headers) {
+    const cookies = appContext.ctx.req.headers.cookie;
+    if (typeof cookies === 'string') {
+      const cookiesJSON = jsHttpCookie.parse(cookies);
+      if (cookiesJSON.theme) {
+        initialTheme = cookiesJSON.theme;
       }
     }
-
-    return { pageProps, theme };
   }
 
-  constructor(props) {
-    super(props);
+  return { ...appProps, initialTheme };
+};
 
-    this.toggleTheme = () => {
-      this.setState(
-        (state) => ({
-          theme: state.checked ? themes.light : themes.dark,
-          checked: !state.checked,
-        }),
-        () => {
-          jsCookie.set(
-            'theme',
-            this.state.theme === themes.dark ? 'dark' : 'light'
-          );
-        }
-      );
-    };
-
-    this.state = {
-      theme: themes[props.theme] || themes.light,
-      toggleTheme: this.toggleTheme,
-      checked: props.theme === 'dark' ? true : false,
-    };
-  }
-
-  render() {
-    const { Component, pageProps } = this.props;
-
-    return (
-      <ThemeContext.Provider value={this.state}>
-        <Component {...pageProps} />
-      </ThemeContext.Provider>
-    );
-  }
-}
+export default MyApp;

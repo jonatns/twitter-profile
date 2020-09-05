@@ -4,9 +4,8 @@
     [
       "module-resolver",
       {
-        "root": ["./"],
         "alias": {
-          "react-native": "react-native-web"
+          "^react-native$": "react-native-web"
         }
       }
     ]

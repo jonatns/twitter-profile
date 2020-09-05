@@ -95,26 +95,26 @@ function UrlPreviewCard({ url, theme }) {
       style={[styles.container, { borderColor: theme.border }]}
       className="container"
     >
-      {imageSource && (
+      {imageSource ? (
         <Image
           style={[styles.image, { borderColor: theme.border }]}
           source={imageSource}
           resizeMode="cover"
           className="image"
         />
-      )}
+      ) : null}
       <View style={styles.content}>
         <Text style={[styles.title, { color: theme.text }]} className="title">
           {title}
         </Text>
-        {description && (
+        {description ? (
           <Text
             style={[styles.description, { color: theme.subText }]}
             className="description"
           >
             {truncateText(description, 14)}
           </Text>
-        )}
+        ) : null}
         <Text style={[styles.description, { color: theme.subText }]}>
           🔗{displayUrl.hostname}
         </Text>

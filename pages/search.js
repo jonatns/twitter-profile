@@ -231,7 +231,6 @@ class Search extends Component {
   render() {
     const {
       profile,
-      loadingProfile,
       tweets,
       loadingTweets,
       screenName,
@@ -255,7 +254,6 @@ class Search extends Component {
         >
           <View style={styles.headerContent} className="header-content">
             <TextInput
-              ref="searchInput"
               placeholder="Search user by @"
               placeholderTextColor={theme.subText}
               value={screenName}
@@ -296,24 +294,6 @@ class Search extends Component {
             ListFooterComponent={<LoadingCard loading={loadingTweets} />}
           />
         </View>
-
-        <style jsx>{`
-          :global(.header-content) {
-            width: 600px;
-            align-self: center;
-          }
-
-          @media only screen and (max-width: 768px) {
-            :global(.header-content) {
-              padding: 0 10px !important;
-              width: 100%;
-            }
-            :global(.list > div) {
-              width: 100%;
-              margin-top: 53px;
-            }
-          }
-        `}</style>
       </View>
     );
   }
@@ -339,6 +319,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '100%',
+    maxWidth: 600,
   },
   main: {
     flex: 1,
@@ -347,7 +331,8 @@ const styles = StyleSheet.create({
   listContent: {
     alignSelf: 'center',
     marginTop: 63,
-    width: 600,
+    width: '100%',
+    maxWidth: 600,
   },
   searchInput: {
     paddingLeft: 15,
@@ -355,7 +340,6 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     paddingRight: 15,
     borderRadius: 50,
-    outline: 'none',
     borderWidth: 1,
   },
 });

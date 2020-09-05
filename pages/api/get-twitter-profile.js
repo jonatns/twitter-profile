@@ -1,4 +1,3 @@
-require('now-env');
 import TwitterAPI from '../../utils/twitter-api';
 
 const twitterClient = new TwitterAPI();
