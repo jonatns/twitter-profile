@@ -2,24 +2,11 @@ import React, { Component, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { withRouter } from 'next/router';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Animated,
-  TouchableWithoutFeedback,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
+import { StyleSheet, View, FlatList, TextInput } from 'react-native';
 
 import bigInt from 'big-integer';
-import { parse } from 'url';
 import throttle from 'lodash.throttle';
 
-import Card from '../components/card';
 import ProfileCard from '../components/profile-card';
 import TweetCard from '../components/tweet-card';
 import LoadingCard from '../components/loading-card';
@@ -30,10 +17,10 @@ import { ThemeContext } from '../components/theme-context';
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : 'https://twitter-profile-search.now.sh';
+    : process.env.VERCEL_URL;
 
 class Search extends Component {
-  static getInitialProps = async ({ query, req }) => {
+  static getInitialProps = async ({ query }) => {
     const resp = await fetch(
       `${BASE_URL}/api/get-twitter-profile?screen_name=${query.q}`
     );
