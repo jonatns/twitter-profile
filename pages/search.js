@@ -1,6 +1,5 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { withRouter } from 'next/router';
 import { StyleSheet, View, FlatList, TextInput } from 'react-native';
 
@@ -14,24 +13,7 @@ import ThemeToggler from '../components/theme-toggler';
 
 import { ThemeContext } from '../components/theme-context';
 
-const BASE_URL =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
-    : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-
 class Search extends Component {
-  static getInitialProps = async ({ query }) => {
-    const resp = await fetch(
-      `${BASE_URL}/api/get-twitter-profile?screen_name=${query.q}`
-    );
-
-    if (resp.status === 200) {
-      const profile = await resp.json();
-      return { q: query.q || 'jonat_ns', profile };
-    }
-    return { q: query.q || 'jonat_ns' };
-  };
-
   profileController = null;
   tweetsController = null;
 
@@ -39,8 +21,8 @@ class Search extends Component {
     tweets: [],
     loadingTweets: true,
     loadingProfile: false,
-    lastSearch: this.props.q,
-    screenName: this.props.q,
+    lastSearch: this.props.router.query.q,
+    screenName: this.props.router.query.q,
     profile: this.props.profile || null,
     inputFocused: false,
     smallestId: null,
@@ -49,7 +31,7 @@ class Search extends Component {
 
   componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick);
-    this.fetchProfileController = new AbortController();
+    this.fetchProfile();
     this.fetchTweets();
     this.updateUrl();
   }
@@ -119,13 +101,7 @@ class Search extends Component {
     }
     this.fetchTweetsController = new AbortController();
 
-    const {
-      lastSearch,
-      screenName,
-      smallestId,
-      tweets,
-      timelineUpdated,
-    } = this.state;
+    const { screenName, smallestId, tweets, timelineUpdated } = this.state;
 
     if (timelineUpdated) {
       return;
