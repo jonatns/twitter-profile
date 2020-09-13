@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, Linking } from 'react-native';
-import fetch from 'isomorphic-unfetch';
+import { StyleSheet, View, Text, Image } from 'react-native';
 
 const BASE_URL =
   process.env.NODE_ENV !== 'production' ? 'http://localhost:5000' : '';
@@ -67,7 +66,7 @@ function UrlPreviewCard({ url, theme }) {
   };
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
 
     return () => {
       fetchController.abort();

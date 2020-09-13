@@ -4,11 +4,7 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import Card from './card';
 import SerializedTweet from './serialized-tweet';
 
-const ProfileCard = React.memo(function ProfileCard({ profile }) {
-  if (!profile) {
-    return null;
-  }
-
+const ProfileCard = React.memo(({ profile }) => {
   const {
     name,
     profile_image_url_https,
@@ -17,7 +13,7 @@ const ProfileCard = React.memo(function ProfileCard({ profile }) {
     description,
     location,
     friends_count,
-    followers_count
+    followers_count,
   } = profile;
 
   const imageUrl = profile_image_url_https.replace('_normal', '');
@@ -133,32 +129,32 @@ const ProfileCard = React.memo(function ProfileCard({ profile }) {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
-    padding: 10
+    padding: 10,
   },
   profileName: {
     marginTop: 10,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   screenName: {
-    color: 'rgb(101, 119, 134)'
+    color: 'rgb(101, 119, 134)',
   },
   profileDescription: {
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   friendsAndFollowers: {
     marginTop: 5,
-    marginBottom: -3
+    marginBottom: -3,
   },
   inline: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   bold: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   followers: {
-    marginLeft: 20
-  }
+    marginLeft: 20,
+  },
 });
 
 export default ProfileCard;

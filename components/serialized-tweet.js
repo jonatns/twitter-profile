@@ -4,17 +4,17 @@ import { View, Text, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    lineHeight: 20
+    lineHeight: 20,
   },
   link: {
-    color: '#1ea1f2'
-  }
+    color: '#1ea1f2',
+  },
 });
 
 const SerializedTweet = React.memo(function SerializedTweet({
   children,
   replyScreenName,
-  theme
+  theme,
 }) {
   const content = children.split(/(@[\w_-]+)/gi);
 
@@ -27,7 +27,6 @@ const SerializedTweet = React.memo(function SerializedTweet({
             <Link href={`/search?q=${content[i].replace('@', '')}`}>
               <Text
                 accessibilityRole="link"
-                href=""
                 style={styles.link}
                 className="link"
               >
@@ -43,12 +42,7 @@ const SerializedTweet = React.memo(function SerializedTweet({
     } else {
       content[i] = (
         <Link href={`/search?q=${content[i].replace('@', '')}`} key={i}>
-          <Text
-            accessibilityRole="link"
-            href=""
-            style={styles.link}
-            className="link"
-          >
+          <Text accessibilityRole="link" style={styles.link} className="link">
             {content[i]}
           </Text>
         </Link>

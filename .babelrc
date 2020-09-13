@@ -1,13 +1,4 @@
 {
   "presets": ["next/babel"],
-  "plugins": [
-    [
-      "module-resolver",
-      {
-        "alias": {
-          "^react-native$": "react-native-web"
-        }
-      }
-    ]
-  ]
+  "plugins": [["react-native-web", { "commonjs": true }]]
 }
