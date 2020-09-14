@@ -57,6 +57,9 @@ export default class MyDocument extends Document {
               overscroll-behavior-y: none;
               background-color: #fff;
             }
+            :global(.screen-name-link):hover {
+              text-decoration: underline;
+            }
           `}</style>
         </body>
       </Html>
