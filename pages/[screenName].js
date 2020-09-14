@@ -9,35 +9,37 @@ import UserTimeline from '../components/user-timeline';
 
 const HEADER_HEIGHT = 53;
 
-const Search = () => {
-  const router = useRouter();
+const UserTimelinePage = () => {
   const { theme } = React.useContext(ThemeContext);
+  const inputRef = React.useRef(null);
 
   const [inputFocused, setInputFocused] = React.useState(false);
-  const screenName = router.query.q;
+
+  const router = useRouter();
+
+  const { screenName } = router.query;
 
   React.useEffect(() => {
     const handleDocumentClick = (e) => {
       if (e.target.nodeName !== 'INPUT' && inputFocused) {
-        handleInputBlur();
+        setInputFocused(false);
       }
     };
 
     document.addEventListener('click', handleDocumentClick);
-
     return () => document.removeEventListener('click', handleDocumentClick);
   }, []);
 
   React.useEffect(() => {
-    if (!screenName) {
-      router.push(`/search?q=jonat_ns`);
+    if (inputRef.current) {
+      inputRef.current.value = screenName;
     }
   }, [screenName]);
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       if (e.target.value !== '' && e.target.value !== screenName) {
-        router.push(`/search?q=${e.target.value}`);
+        router.push(`/${e.target.value}`);
       }
     }
   };
@@ -66,6 +68,7 @@ const Search = () => {
       >
         <View style={styles.headerContent}>
           <TextInput
+            ref={inputRef}
             placeholder="Search user by @"
             placeholderTextColor={theme.subText}
             defaultValue={screenName}
@@ -136,4 +139,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Search;
+export default UserTimelinePage;

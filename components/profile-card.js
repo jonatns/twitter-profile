@@ -4,7 +4,7 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import Card from './card';
 import SerializedTweet from './serialized-tweet';
 
-const ProfileCard = React.memo(({ profile }) => {
+const ProfileCard = ({ profile }) => {
   const {
     name,
     profile_image_url_https,
@@ -124,7 +124,7 @@ const ProfileCard = React.memo(({ profile }) => {
       )}
     </Card>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {

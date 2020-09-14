@@ -1,75 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
-
-const BASE_URL =
-  process.env.NODE_ENV !== 'production' ? 'http://localhost:5000' : '';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    marginTop: 10,
-    borderRadius: 15,
-    borderWidth: 1,
-    height: 124,
-  },
-  imageWrapper: {
-    alignSelf: 'stretch',
-    borderRightWidth: 1,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15,
-  },
-  image: {
-    height: '100%',
-    width: 124,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15,
-    borderRightWidth: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 10,
-  },
-  title: {
-    color: 'black',
-    lineHeight: 20,
-  },
-  description: {
-    color: 'rgb(101, 119, 134)',
-  },
-});
-
-const truncateText = (text, limit) => {
-  if (!text || !limit) return;
-
-  const content = text.trim().split(' ').slice(0, limit);
-
-  return `${content.join(' ')}...`;
-};
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  useWindowDimensions,
+} from 'react-native';
 
 function UrlPreviewCard({ url, theme }) {
+  const fetchController = React.useRef(null);
   const [preview, setPreview] = useState(null);
-  const fetchController = new AbortController();
-
-  const fetchData = async () => {
-    try {
-      const resp = await fetch(`/api/get-url-preview?url=${url}`, {
-        signal: fetchController.signal,
-      });
-      const data = await resp.json();
-      setPreview(data);
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.log(err);
-      }
-    }
-  };
+  const windowWidth = useWindowDimensions().width;
 
   useEffect(() => {
-    // fetchData();
+    const fetchData = async () => {
+      fetchController.current = new AbortController();
+
+      try {
+        const resp = await fetch(`/api/get-url-preview?url=${url}`, {
+          signal: fetchController.current.signal,
+        });
+        const data = await resp.json();
+        setPreview(data);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.log(err);
+        }
+      }
+    };
+
+    fetchData();
 
     return () => {
-      fetchController.abort();
+      fetchController.current.abort();
     };
   }, [url]);
 
@@ -86,55 +49,86 @@ function UrlPreviewCard({ url, theme }) {
   const imageSource = images && images.length > 0 && images[0];
   const displayUrl = new URL(link);
 
+  let previewHeight = 84;
+
+  if (windowWidth > 490 && windowWidth < 580) {
+    previewHeight = 104;
+  } else if (windowWidth >= 580) {
+    previewHeight = 124;
+  }
+
   return (
     <View
       accessibilityRole="link"
       href={link}
       target="_blank"
-      style={[styles.container, { borderColor: theme.border }]}
-      className="container"
+      style={[
+        styles.container,
+        { borderColor: theme.border, height: previewHeight },
+      ]}
     >
       {imageSource ? (
         <Image
-          style={[styles.image, { borderColor: theme.border }]}
+          style={[
+            styles.image,
+            { borderColor: theme.border, width: previewHeight },
+          ]}
           source={imageSource}
           resizeMode="cover"
-          className="image"
         />
       ) : null}
       <View style={styles.content}>
-        <Text style={[styles.title, { color: theme.text }]} className="title">
+        <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
           {title}
         </Text>
-        {description ? (
+        {description && windowWidth > 490 ? (
           <Text
             style={[styles.description, { color: theme.subText }]}
-            className="description"
+            numberOfLines={2}
           >
-            {truncateText(description, 14)}
+            {description}
           </Text>
         ) : null}
         <Text style={[styles.description, { color: theme.subText }]}>
           🔗{displayUrl.hostname}
         </Text>
       </View>
-      <style jsx>{`
-        @media only screen and (max-width: 680px) {
-          :global(.container) {
-            height: 84px;
-          }
-          :global(.title, .description) {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          :global(.image) {
-            width: 84px !important;
-          }
-        }
-      `}</style>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 10,
+    borderRadius: 15,
+    borderWidth: 1,
+  },
+  imageWrapper: {
+    alignSelf: 'stretch',
+    borderRightWidth: 1,
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
+  },
+  image: {
+    height: '100%',
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
+    borderRightWidth: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 10,
+    justifyContent: 'center',
+  },
+  title: {
+    color: 'black',
+    lineHeight: 20,
+  },
+  description: {
+    color: 'rgb(101, 119, 134)',
+  },
+});
 
 export default UrlPreviewCard;

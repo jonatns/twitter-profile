@@ -30,11 +30,16 @@ const UserTimeline = ({ screenName }) => {
   const {
     status,
     data: timeline,
+    canFetchMore,
     fetchMore,
     isFetchingMore,
   } = useInfiniteQuery(`timeline:${screenName}`, fetchTimeline, {
     getFetchMore: (lastGroup) => {
-      return BigInt(lastGroup[lastGroup.length - 1].id_str) - 1n;
+      if (lastGroup.length) {
+        return BigInt(lastGroup[lastGroup.length - 1].id_str) - 1n;
+      }
+
+      return false;
     },
   });
 
@@ -53,7 +58,7 @@ const UserTimeline = ({ screenName }) => {
       keyExtractor={(item) => item.id_str}
       renderItem={renderItem}
       onEndReached={() => {
-        if (!isFetchingMore) {
+        if (!isFetchingMore && canFetchMore) {
           fetchMore();
         }
       }}
