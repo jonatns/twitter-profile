@@ -3,7 +3,7 @@ import Router from 'next/router';
 
 const Index = () => {
   React.useEffect(() => {
-    Router.push('/[screenName]', '/jonat_ns');
+    Router.replace('/[screenName]', '/jonat_ns');
   }, []);
 
   return null;

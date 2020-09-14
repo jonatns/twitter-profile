@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from 'react-query';
 
 import ProfileCard from '../components/profile-card';
 import TweetCard from '../components/tweet-card';
-import LoadingCard from '../components/loading-card';
+import LoadingMore from './loading-more';
 
 const UserTimeline = ({ screenName }) => {
   const renderItem = ({ item }) => <TweetCard key={item.id_str} {...item} />;
@@ -51,22 +51,28 @@ const UserTimeline = ({ screenName }) => {
     );
   }
 
+  const timelineData = timeline.flatMap((t) => t);
+
   return (
-    <FlatList
-      contentContainerStyle={styles.container}
-      data={timeline.flatMap((page) => page)}
-      keyExtractor={(item) => item.id_str}
-      renderItem={renderItem}
-      onEndReached={() => {
-        if (!isFetchingMore && canFetchMore) {
-          fetchMore();
-        }
-      }}
-      onEndReachedThreshold={0.8}
-      initialNumToRender={7}
-      ListHeaderComponent={<ProfileCard profile={profile} />}
-      ListFooterComponent={<LoadingCard loading={isFetchingMore} />}
-    />
+    <>
+      <FlatList
+        removeClippedSubviews
+        contentContainerStyle={styles.container}
+        data={timelineData}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        onEndReached={() => {
+          if (!isFetchingMore && canFetchMore) {
+            fetchMore();
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        initialNumToRender={3}
+        maxToRenderPerBatch={150}
+        ListHeaderComponent={<ProfileCard profile={profile} />}
+      />
+      <LoadingMore loading={isFetchingMore} />
+    </>
   );
 };
 
@@ -74,6 +80,7 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: 'center',
     marginTop: 10,
+    paddingBottom: 80,
     width: '100%',
     maxWidth: 600,
   },

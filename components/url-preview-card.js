@@ -36,10 +36,21 @@ function UrlPreviewCard({ url, theme }) {
     };
   }, [url]);
 
+  let previewHeight = 84;
+
+  if (windowWidth > 490 && windowWidth < 580) {
+    previewHeight = 104;
+  } else if (windowWidth >= 580) {
+    previewHeight = 124;
+  }
+
   if (!preview) {
     return (
       <View
-        style={[styles.container, { borderColor: theme.border }]}
+        style={[
+          styles.container,
+          { borderColor: theme.border, paddingTop: previewHeight },
+        ]}
         className="container"
       />
     );
@@ -48,14 +59,6 @@ function UrlPreviewCard({ url, theme }) {
   const { title, description, images, url: link } = preview;
   const imageSource = images && images.length > 0 && images[0];
   const displayUrl = new URL(link);
-
-  let previewHeight = 84;
-
-  if (windowWidth > 490 && windowWidth < 580) {
-    previewHeight = 104;
-  } else if (windowWidth >= 580) {
-    previewHeight = 124;
-  }
 
   return (
     <View
