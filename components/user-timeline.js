@@ -20,28 +20,28 @@ const UserTimeline = ({ screenName }) => {
     fetchProfile
   );
 
-  const fetchTimeline = async (_key, maxId = null) => {
-    const resp = await fetch(
-      `/api/get-twitter-timeline?max_id=${maxId}&screen_name=${screenName}`
-    );
-    return resp.json();
-  };
-
   const {
     status,
     data: timeline,
-    canFetchMore,
-    fetchMore,
-    isFetchingMore,
-  } = useInfiniteQuery(`timeline:${screenName}`, fetchTimeline, {
-    getFetchMore: (lastGroup) => {
-      if (lastGroup.length) {
-        return BigInt(lastGroup[lastGroup.length - 1].id_str) - 1n;
-      }
-
-      return false;
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery(
+    ['timeline', screenName],
+    async ({ pageParam = null }) => {
+      const resp = await fetch(
+        `/api/get-twitter-timeline?max_id=${pageParam}&screen_name=${screenName}`
+      );
+      return resp.json();
     },
-  });
+    {
+      getNextPageParam: (lastPage) => {
+        return lastPage.length
+          ? BigInt(lastPage[lastPage.length - 1].id_str) - 1n
+          : false;
+      },
+    }
+  );
 
   if (status === 'loading' || isLoadingProfile) {
     return (
@@ -51,7 +51,7 @@ const UserTimeline = ({ screenName }) => {
     );
   }
 
-  const timelineData = timeline.flatMap((t) => t);
+  const timelineData = timeline.pages.flatMap((t) => t);
 
   return (
     <>
@@ -62,8 +62,8 @@ const UserTimeline = ({ screenName }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         onEndReached={() => {
-          if (!isFetchingMore && canFetchMore) {
-            fetchMore();
+          if (!isFetchingNextPage && hasNextPage) {
+            fetchNextPage();
           }
         }}
         onEndReachedThreshold={0.5}
@@ -71,7 +71,7 @@ const UserTimeline = ({ screenName }) => {
         maxToRenderPerBatch={150}
         ListHeaderComponent={<ProfileCard profile={profile} />}
       />
-      <LoadingMore loading={isFetchingMore} />
+      <LoadingMore loading={isFetchingNextPage} />
     </>
   );
 };

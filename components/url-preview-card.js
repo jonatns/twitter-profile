@@ -56,8 +56,15 @@ function UrlPreviewCard({ url, theme }) {
     );
   }
 
-  const { title, description, images, url: link } = preview;
-  const imageSource = images && images.length > 0 && images[0];
+  const { title, description, images, favicons, url: link } = preview;
+  let imageSource = null;
+
+  if (images && images.length) {
+    imageSource = images[0];
+  } else if (favicons && favicons.length) {
+    imageSource = favicons[0];
+  }
+
   const displayUrl = new URL(link);
 
   return (

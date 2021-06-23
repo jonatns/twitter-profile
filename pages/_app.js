@@ -1,6 +1,9 @@
 import React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { parseCookies, setCookie } from 'nookies';
 import { ThemeContext, themes } from '../components/theme-context';
+
+const queryClient = new QueryClient();
 
 const MyApp = ({ Component, pageProps }) => {
   const cookies = parseCookies();
@@ -20,15 +23,17 @@ const MyApp = ({ Component, pageProps }) => {
   };
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        toggleTheme,
-        checked,
-      }}
-    >
-      <Component {...pageProps} />
-    </ThemeContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeContext.Provider
+        value={{
+          theme,
+          toggleTheme,
+          checked,
+        }}
+      >
+        <Component {...pageProps} />
+      </ThemeContext.Provider>
+    </QueryClientProvider>
   );
 };
 
